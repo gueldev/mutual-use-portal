@@ -155,3 +155,19 @@
     color: var(--color-foreground);
   }
 }
+
+@utility bg-gradient-brand {
+  background-image: var(--gradient-brand);
+}
+
+@utility bg-gradient-deep {
+  background-image: var(--gradient-deep);
+}
+
+@utility shadow-panel {
+  box-shadow: var(--shadow-panel);
+}
+
+@utility text-balance-tight {
+  text-wrap: balance;
+}
