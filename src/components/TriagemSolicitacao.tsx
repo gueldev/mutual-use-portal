@@ -200,12 +200,12 @@ function Field({
   children,
 }: {
   label: string;
-  error?: string;
-  touched?: boolean;
-  value?: string;
-  hint?: string;
-  help?: string;
-  full?: boolean;
+  error?: string | undefined;
+  touched?: boolean | undefined;
+  value?: string | undefined;
+  hint?: string | undefined;
+  help?: string | undefined;
+  full?: boolean | undefined;
   children: React.ReactNode;
 }) {
   const showError = Boolean(touched && error);
@@ -291,6 +291,8 @@ export default function TriagemSolicitacao() {
   const done = totalRequired - missingFields.length - missingDocs.length;
   const progress = Math.round((done / totalRequired) * 100);
   const canSave = missingFields.length === 0 && missingDocs.length === 0;
+
+  const isTouched = (key: keyof Form) => Boolean(touched[key]);
 
   const set = <K extends keyof Form>(key: K, value: Form[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -408,7 +410,7 @@ export default function TriagemSolicitacao() {
           title="Dados da Empresa Solicitante"
           subtitle="Identificação cadastral do solicitante"
         >
-          <Field label="CNPJ" error={errors.cnpj} touched={touched.cnpj} value={form.cnpj}>
+          <Field label="CNPJ" error={errors.cnpj} touched={isTouched("cnpj")} value={form.cnpj}>
             <input
               className={inputCls}
               inputMode="numeric"
@@ -421,7 +423,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Razão Social"
             error={errors.razaoSocial}
-            touched={touched.razaoSocial}
+            touched={isTouched("razaoSocial")}
             value={form.razaoSocial}
           >
             <input
@@ -445,7 +447,7 @@ export default function TriagemSolicitacao() {
             label="Nome da Plaqueta"
             help="Encontrado no checklist simplificado ou memorial descritivo."
             error={errors.plaqueta}
-            touched={touched.plaqueta}
+            touched={isTouched("plaqueta")}
             value={form.plaqueta}
             full
           >
@@ -461,7 +463,7 @@ export default function TriagemSolicitacao() {
             label="Número da TN"
             hint="10 dígitos · origem SAP CRM"
             error={errors.tn}
-            touched={touched.tn}
+            touched={isTouched("tn")}
             value={form.tn}
           >
             <input
@@ -477,7 +479,7 @@ export default function TriagemSolicitacao() {
             label="Número da Nota de Projeto"
             hint="10 dígitos · origem SAP CCS"
             error={errors.notaProjeto}
-            touched={touched.notaProjeto}
+            touched={isTouched("notaProjeto")}
             value={form.notaProjeto}
           >
             <input
@@ -501,7 +503,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Pontos Novos"
             error={errors.pontosNovos}
-            touched={touched.pontosNovos}
+            touched={isTouched("pontosNovos")}
             value={form.pontosNovos}
           >
             <input
@@ -517,7 +519,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Pontos Agrupados"
             error={errors.pontosAgrupados}
-            touched={touched.pontosAgrupados}
+            touched={isTouched("pontosAgrupados")}
             value={form.pontosAgrupados}
           >
             <input
@@ -532,7 +534,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Quantidade de Equipamentos"
             error={errors.equipamentos}
-            touched={touched.equipamentos}
+            touched={isTouched("equipamentos")}
             value={form.equipamentos}
           >
             <input
@@ -547,7 +549,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Projeto 5G"
             error={errors.projeto5g}
-            touched={touched.projeto5g}
+            touched={isTouched("projeto5g")}
             value={form.projeto5g}
           >
             <select
@@ -573,7 +575,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Município do Projeto"
             error={errors.municipio}
-            touched={touched.municipio}
+            touched={isTouched("municipio")}
             value={form.municipio}
           >
             <select
@@ -590,7 +592,7 @@ export default function TriagemSolicitacao() {
               ))}
             </select>
           </Field>
-          <Field label="Nome da Rota" error={errors.rota} touched={touched.rota} value={form.rota}>
+          <Field label="Nome da Rota" error={errors.rota} touched={isTouched("rota")} value={form.rota}>
             <input
               className={inputCls}
               placeholder="Ex.: Rota Boa Viagem 04"
@@ -611,7 +613,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Nome do Responsável Técnico"
             error={errors.responsavel}
-            touched={touched.responsavel}
+            touched={isTouched("responsavel")}
             value={form.responsavel}
           >
             <input
@@ -625,7 +627,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="E-mail do Responsável Técnico"
             error={errors.email}
-            touched={touched.email}
+            touched={isTouched("email")}
             value={form.email}
           >
             <input
@@ -755,7 +757,7 @@ export default function TriagemSolicitacao() {
           <Field
             label="Classificação"
             error={errors.status}
-            touched={touched.status}
+            touched={isTouched("status")}
             value={form.status}
             full
           >
@@ -776,7 +778,7 @@ export default function TriagemSolicitacao() {
             <Field
               label="Justificativa"
               error={errors.justificativa}
-              touched={touched.justificativa}
+              touched={isTouched("justificativa")}
               value={form.justificativa}
               full
             >
