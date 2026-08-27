@@ -1,8 +1,3 @@
-# Neoenergia Conecta
-
-tenho a seguinte imagem desse projeto, quero que vc faca uma landing page parecida com essa mas com mais a cara da neoenergia pernambuco , isso eh um portal para a equipe de uso mutuo
-
-This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
