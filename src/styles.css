@@ -147,7 +147,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
@@ -157,7 +157,7 @@
   }
 
   ::selection {
-    background-color: oklch(0.74 0.19 150 / 0.3);
+    background-color: oklch(0.64 0.17 152 / 0.25);
   }
 
   ::-webkit-scrollbar {
@@ -168,13 +168,13 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: oklch(0.45 0.05 200 / 0.5);
+    background: oklch(0.72 0.03 220 / 0.55);
     border-radius: 999px;
     border: 3px solid transparent;
     background-clip: content-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.74 0.19 150 / 0.55);
+    background: oklch(0.64 0.17 152 / 0.6);
     background-clip: content-box;
   }
 }
