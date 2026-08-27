@@ -9,8 +9,8 @@ import {
   Menu,
   Search,
   TrendingUp,
-  Zap,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
