@@ -53,16 +53,39 @@ function Index() {
           open ? "flex flex-col" : "hidden"
         }`}
       >
+        {/* Logo Neoenergia */}
         <div className="flex items-center gap-3 px-5 py-5">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary">
-            <Zap className="size-4" strokeWidth={2.5} />
-          </span>
-          <p className="text-sm font-semibold leading-tight">
-            Portal de
-            <br />
-            Projetos
-          </p>
+          <svg
+            width="42"
+            height="42"
+            viewBox="0 0 42 42"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="shrink-0 drop-shadow-md"
+            aria-label="Neoenergia"
+          >
+            <defs>
+              <linearGradient id="logoGradient" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#00A651" />
+                <stop offset="100%" stopColor="#007A3D" />
+              </linearGradient>
+            </defs>
+            <circle cx="21" cy="21" r="21" fill="url(#logoGradient)" />
+            <path
+              d="M21 8 L25 18 L34 20 L25 22 L21 34 L17 22 L8 20 L17 18 Z"
+              fill="white"
+            />
+          </svg>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold leading-tight tracking-tight">
+              NEOENERGIA
+            </span>
+            <span className="text-[0.7rem] font-medium leading-tight opacity-90">
+              Pernambuco
+            </span>
+          </div>
         </div>
+
 
         <nav className="flex-1 overflow-y-auto px-3 pb-6">
           <p className="px-3 pb-2 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70">
