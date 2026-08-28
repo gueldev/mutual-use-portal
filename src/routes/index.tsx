@@ -11,6 +11,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import logoAsset from "../assets/neoenergia-logo.jpg.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
