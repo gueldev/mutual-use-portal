@@ -9,10 +9,11 @@ import {
   Menu,
   Search,
   TrendingUp,
+  X,
 } from "lucide-react";
 
 import logoAsset from "../assets/neoenergia-logo.jpg.asset.json";
-
+import TriagemSolicitacao from "@/components/TriagemSolicitacao";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,23 +37,78 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const subItems = [
-  "Minutas",
-  "Formulário de Notas",
-  "Notas",
-  "Análise Técnica de Projetos",
+type ViewKey =
+  | "solicitacoes"
+  | "minutas-sub"
+  | "formulario-notas"
+  | "notas"
+  | "analise-tecnica"
+  | "minutas"
+  | "incrementos"
+  | "log";
+
+const views: Record<ViewKey, { label: string; description: string }> = {
+  solicitacoes: {
+    label: "Solicitações",
+    description: "Triagem e acompanhamento de solicitações de uso mútuo.",
+  },
+  "minutas-sub": {
+    label: "Minutas",
+    description: "Minutas vinculadas à análise de projetos.",
+  },
+  "formulario-notas": {
+    label: "Formulário de Notas",
+    description: "Registro de notas técnicas dos projetos.",
+  },
+  notas: { label: "Notas", description: "Consulta das notas emitidas." },
+  "analise-tecnica": {
+    label: "Análise Técnica de Projetos",
+    description: "Etapa 2 — avaliação técnica dos projetos aprovados.",
+  },
+  minutas: { label: "Minutas", description: "Gestão de minutas contratuais." },
+  incrementos: {
+    label: "Incrementos",
+    description: "Controle de incrementos de pontos e equipamentos.",
+  },
+  log: {
+    label: "Log do Sistema",
+    description: "Histórico de ações realizadas no portal.",
+  },
+};
+
+const subItems: { key: ViewKey; label: string }[] = [
+  { key: "minutas-sub", label: "Minutas" },
+  { key: "formulario-notas", label: "Formulário de Notas" },
+  { key: "notas", label: "Notas" },
+  { key: "analise-tecnica", label: "Análise Técnica de Projetos" },
 ];
 
 function Index() {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(true);
+  const [view, setView] = useState<ViewKey>("solicitacoes");
+
+  const select = (key: ViewKey) => {
+    setView(key);
+    setOpen(false);
+  };
+
+  const itemClass = (active: boolean) =>
+    `mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+      active
+        ? "bg-primary shadow-panel"
+        : "opacity-95 hover:bg-brand-dark/50 hover:translate-x-0.5"
+    }`;
+
+  const current = views[view];
+  const inAnalise = subItems.some((s) => s.key === view);
 
   return (
     <div className="min-h-screen bg-background font-sans md:flex">
       {/* Barra lateral */}
       <aside
         className={`bg-gradient-brand text-primary-foreground md:sticky md:top-0 md:flex md:h-screen md:w-72 md:shrink-0 md:flex-col ${
-          open ? "flex flex-col" : "hidden"
+          open ? "fixed inset-0 z-50 flex flex-col" : "hidden"
         }`}
       >
         {/* Logo Neoenergia */}
@@ -72,48 +128,81 @@ function Index() {
               Pernambuco
             </span>
           </div>
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Fechar menu"
+            className="ml-auto flex size-8 items-center justify-center rounded-lg bg-brand-dark/40 md:hidden"
+          >
+            <X className="size-4" />
+          </button>
         </div>
-
 
         <nav className="flex-1 overflow-y-auto px-3 pb-6">
           <p className="px-3 pb-2 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70">
             Menu
           </p>
 
-          <button className="flex w-full items-center gap-3 rounded-lg bg-primary px-3 py-2.5 text-sm font-medium shadow-panel">
+          <button
+            onClick={() => select("solicitacoes")}
+            className={itemClass(view === "solicitacoes")}
+          >
             <Search className="size-4" />
             Solicitações
           </button>
 
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium opacity-95 transition-colors hover:bg-brand-dark/50"
+            aria-expanded={expanded}
+            className={itemClass(inAnalise && !expanded)}
           >
             <Activity className="size-4" />
             <span className="flex-1 text-left">Análise de Projetos</span>
             <ChevronDown
-              className={`size-4 transition-transform ${expanded ? "" : "-rotate-90"}`}
+              className={`size-4 transition-transform duration-300 ${
+                expanded ? "" : "-rotate-90"
+              }`}
             />
           </button>
 
-          {expanded && (
-            <ul className="mt-1 space-y-0.5 border-l border-primary-foreground/25 pl-3 ml-5">
+          <div
+            className={`grid transition-all duration-300 ease-out ${
+              expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <ul className="ml-5 space-y-0.5 overflow-hidden border-l border-primary-foreground/25 pl-3">
               {subItems.map((s) => (
-                <li key={s}>
-                  <button className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[0.82rem] font-medium opacity-90 transition-colors hover:bg-brand-dark/50">
-                    <span className="size-1.5 shrink-0 rounded-full bg-primary-foreground/85" />
-                    {s}
+                <li key={s.key}>
+                  <button
+                    onClick={() => select(s.key)}
+                    className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[0.82rem] font-medium transition-all duration-200 ${
+                      view === s.key
+                        ? "bg-brand-dark/60 text-primary-foreground"
+                        : "opacity-90 hover:bg-brand-dark/50 hover:translate-x-0.5"
+                    }`}
+                  >
+                    <span
+                      className={`shrink-0 rounded-full bg-primary-foreground transition-all ${
+                        view === s.key ? "size-2" : "size-1.5 opacity-85"
+                      }`}
+                    />
+                    {s.label}
                   </button>
                 </li>
               ))}
             </ul>
-          )}
+          </div>
 
-          <button className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium opacity-95 transition-colors hover:bg-brand-dark/50">
+          <button
+            onClick={() => select("minutas")}
+            className={itemClass(view === "minutas")}
+          >
             <FileText className="size-4" />
             Minutas
           </button>
-          <button className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium opacity-95 transition-colors hover:bg-brand-dark/50">
+          <button
+            onClick={() => select("incrementos")}
+            className={itemClass(view === "incrementos")}
+          >
             <TrendingUp className="size-4" />
             Incrementos
           </button>
@@ -121,7 +210,10 @@ function Index() {
           <p className="px-3 pb-2 pt-6 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70">
             Ferramentas
           </p>
-          <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium opacity-95 transition-colors hover:bg-brand-dark/50">
+          <button
+            onClick={() => select("log")}
+            className={itemClass(view === "log")}
+          >
             <LayoutPanelTop className="size-4" />
             Log do Sistema
           </button>
@@ -148,7 +240,13 @@ function Index() {
             <nav className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Portal</span>
               <span className="text-border">/</span>
-              <span className="font-semibold text-highlight">Solicitações</span>
+              {inAnalise && (
+                <>
+                  <span className="text-muted-foreground">Análise de Projetos</span>
+                  <span className="text-border">/</span>
+                </>
+              )}
+              <span className="font-semibold text-highlight">{current.label}</span>
             </nav>
           </div>
           <button className="flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90">
@@ -157,19 +255,32 @@ function Index() {
           </button>
         </header>
 
-        <main className="flex flex-1 items-center justify-center px-6 py-20">
-          <div className="text-center">
-            <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-secondary text-primary">
-              <Search className="size-7" strokeWidth={1.75} />
-            </span>
-            <h1 className="mt-6 text-2xl font-semibold text-highlight">Solicitações</h1>
-            <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-              Módulo de consulta e acompanhamento de solicitações.
-            </p>
-            <span className="mt-5 inline-block rounded-md border border-highlight/50 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-highlight">
-              Em breve
-            </span>
-          </div>
+        <main className="flex-1">
+          {view === "solicitacoes" ? (
+            <div key={view} className="animate-rise">
+              <TriagemSolicitacao />
+            </div>
+          ) : (
+            <div
+              key={view}
+              className="animate-rise flex flex-1 items-center justify-center px-6 py-20"
+            >
+              <div className="text-center">
+                <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-secondary text-primary">
+                  <Search className="size-7" strokeWidth={1.75} />
+                </span>
+                <h1 className="mt-6 text-2xl font-semibold text-highlight">
+                  {current.label}
+                </h1>
+                <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                  {current.description}
+                </p>
+                <span className="mt-5 inline-block rounded-md border border-highlight/50 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-highlight">
+                  Em breve
+                </span>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
