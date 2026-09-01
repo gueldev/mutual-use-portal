@@ -12,7 +12,6 @@ import {
   X,
 } from "lucide-react";
 
-import logoAsset from "../assets/neoenergia-logo.jpg.asset.json";
 import TriagemSolicitacao from "@/components/TriagemSolicitacao";
 
 export const Route = createFileRoute("/")({
@@ -114,7 +113,7 @@ function Index() {
         {/* Logo Neoenergia */}
         <div className="flex items-center gap-3 px-5 py-5">
           <img
-            src={logoAsset.url}
+            src="/favicon.png"
             alt="Neoenergia"
             width={42}
             height={42}
