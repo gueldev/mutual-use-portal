@@ -10,7 +10,6 @@ import {
   XCircle,
 } from "lucide-react";
 
-import logoAsset from "../assets/neoenergia-logo.jpg.asset.json";
 import MultiSelect from "@/components/MultiSelect";
 import { maskCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
 import { cn } from "@/lib/utils";
@@ -385,7 +384,7 @@ export default function FormularioNotas() {
     <div className="mx-auto w-full max-w-4xl px-4 py-8 md:px-8">
       <div className="mb-6 flex flex-col items-center text-center">
         <img
-          src={logoAsset.url}
+          src="/favicon.png"
           alt="Neoenergia"
           width={150}
           height={44}
