@@ -620,7 +620,7 @@ export default function FormularioNotas() {
                 </span>
               </div>
 
-              <div className="divide-y divide-border overflow-hidden rounded-xl border border-border">
+              <div className="divide-y divide-border rounded-xl border border-border">
                 {REPROVA_DOCS.map((d) => {
                   const item = reprova[d.key];
                   const isOpen = openDoc === d.key;
