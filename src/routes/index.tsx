@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import TriagemSolicitacao from "@/components/TriagemSolicitacao";
+import FormularioNotas from "@/components/FormularioNotas";
 
 export const Route = createFileRoute("/")({
   head: () => ({
