@@ -260,6 +260,10 @@ function Index() {
             <div key={view} className="animate-rise">
               <TriagemSolicitacao />
             </div>
+          ) : view === "formulario-notas" ? (
+            <div key={view} className="animate-rise">
+              <FormularioNotas />
+            </div>
           ) : (
             <div
               key={view}
