@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import TriagemSolicitacao from "@/components/TriagemSolicitacao";
+import FormularioNotas from "@/components/FormularioNotas";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -258,6 +259,10 @@ function Index() {
           {view === "solicitacoes" ? (
             <div key={view} className="animate-rise">
               <TriagemSolicitacao />
+            </div>
+          ) : view === "formulario-notas" ? (
+            <div key={view} className="animate-rise">
+              <FormularioNotas />
             </div>
           ) : (
             <div
