@@ -653,11 +653,10 @@ export default function FormularioNotas() {
 
 
           <Field label="Município da obra" error={errors.municipio} touched={t("municipio")}>
-            <input
+            <MunicipioCombobox
               value={form.municipio}
-              onChange={(e) => set("municipio", e.target.value)}
+              onChange={(v) => set("municipio", v)}
               onBlur={() => blur("municipio")}
-              placeholder="Ex.: Recife"
               className={inputCls}
             />
           </Field>
