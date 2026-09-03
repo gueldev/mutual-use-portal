@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import MultiSelect from "@/components/MultiSelect";
-import { maskCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
+import { maskCNPJ, isValidCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
 import { cn } from "@/lib/utils";
 
 /* ---------- catálogo de motivos de reprovação ---------- */
@@ -200,6 +200,7 @@ function validate(f: Form, reprova: Reprova): Errors {
   const cnpjDigits = f.cnpj.replace(/\D/g, "");
   if (!cnpjDigits) e.cnpj = "CNPJ é obrigatório.";
   else if (cnpjDigits.length !== 14) e.cnpj = "O CNPJ deve conter 14 números.";
+  else if (!isValidCNPJ(f.cnpj)) e.cnpj = "CNPJ inválido.";
 
   if (!f.municipio.trim()) e.municipio = "Município da obra é obrigatório.";
   if (!f.responsavel.trim()) e.responsavel = "Nome do Responsável Técnico é obrigatório.";
