@@ -135,14 +135,26 @@ const emptyReprova = (): Reprova =>
     return acc;
   }, {} as Reprova);
 
+const ANALISTAS = [
+  "FELIPE TELES FONSECA",
+  "JAILSON SEVERINO DOS SANTOS",
+  "ALESSANDRA FELICIANO DA SILVA",
+  "MARLON DAVIS GUIMARAES CARNEIRO",
+  "NADIRLENE CAVALCANTI LEITE LINS E MELLO",
+];
+
 type Form = {
+  nota: string;
+  analisadoPor: string;
   pontosFaturados: string;
   equipamentosFaturados: string;
+  pontosAgrupados: string;
   projeto5g: string;
   etapaAnalise: string;
   etapaOutra: string;
   empresa: string;
   cnpj: string;
+  enderecoEmpresa: string;
   municipio: string;
   responsavel: string;
   email: string;
@@ -155,13 +167,17 @@ type Form = {
 };
 
 const initialForm: Form = {
+  nota: "",
+  analisadoPor: "",
   pontosFaturados: "",
   equipamentosFaturados: "",
+  pontosAgrupados: "",
   projeto5g: "",
   etapaAnalise: "",
   etapaOutra: "",
   empresa: "",
   cnpj: "",
+  enderecoEmpresa: "",
   municipio: "",
   responsavel: "",
   email: "",
@@ -172,6 +188,7 @@ const initialForm: Form = {
   pontosRevelia: "",
   dataLancamento: "",
 };
+
 
 const intError = (v: string, label: string) => {
   if (v.trim() === "") return `${label} é obrigatório.`;
@@ -186,16 +203,23 @@ type Errors = Partial<Record<ErrKey, string>>;
 function validate(f: Form, reprova: Reprova): Errors {
   const e: Errors = {};
 
+  if (!f.nota.trim()) e.nota = "Nota é obrigatória.";
+  if (!f.analisadoPor) e.analisadoPor = "Selecione quem analisou.";
+
   const pf = intError(f.pontosFaturados, "Quantidade de pontos faturados");
   if (pf) e.pontosFaturados = pf;
   const ef = intError(f.equipamentosFaturados, "Quantidade de equipamentos faturados");
   if (ef) e.equipamentosFaturados = ef;
+  const pa = intError(f.pontosAgrupados, "Quantidade de pontos agrupados");
+  if (pa) e.pontosAgrupados = pa;
 
   if (!f.projeto5g) e.projeto5g = "Informe se é Projeto 5G.";
   if (!f.etapaAnalise) e.etapaAnalise = "Selecione a etapa da análise.";
   else if (f.etapaAnalise === "Outra" && !f.etapaOutra.trim()) e.etapaOutra = "Informe a etapa.";
 
   if (!f.empresa.trim()) e.empresa = "Nome da Empresa é obrigatório.";
+  if (!f.enderecoEmpresa.trim()) e.enderecoEmpresa = "Endereço Empresa é obrigatório.";
+
 
   const cnpjDigits = f.cnpj.replace(/\D/g, "");
   if (!cnpjDigits) e.cnpj = "CNPJ é obrigatório.";
