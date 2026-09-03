@@ -140,8 +140,9 @@ function validate(f: Form): Partial<Record<keyof Form, string>> {
   if (eq) e.equipamentos = eq;
 
   if (!f.projeto5g) e.projeto5g = "Informe se é Projeto 5G.";
-  if (!f.municipio) e.municipio = "Município do Projeto é obrigatório.";
-  if (!f.rota.trim()) e.rota = "Nome da Rota é obrigatório.";
+  if (!f.municipio.trim()) e.municipio = "Município do Projeto é obrigatório.";
+  else if (!PE_MUNICIPIOS.some((m) => m.toLowerCase() === f.municipio.trim().toLowerCase()))
+    e.municipio = "Selecione um município de Pernambuco da lista.";
 
   if (!f.responsavel.trim()) e.responsavel = "Nome do Responsável Técnico é obrigatório.";
   else if (f.responsavel.trim().length < 3) e.responsavel = "Informe no mínimo 3 caracteres.";
