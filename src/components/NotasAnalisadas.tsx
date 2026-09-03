@@ -141,6 +141,16 @@ export default function NotasAnalisadas({
                           )}
                         </td>
                       ))}
+                      <td className="whitespace-nowrap px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => onEdit?.(n.id)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-input px-2.5 py-1.5 text-[0.7rem] font-semibold text-foreground transition-colors hover:bg-secondary/60"
+                        >
+                          <Pencil className="size-3" />
+                          Editar
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
