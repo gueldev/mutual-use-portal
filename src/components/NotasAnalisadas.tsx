@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ClipboardList, Search } from "lucide-react";
+import { ClipboardList, Pencil, Search } from "lucide-react";
 
 import { useNotas } from "@/lib/notas-store";
 import { cn } from "@/lib/utils";
