@@ -25,7 +25,11 @@ const columns: { key: string; label: string }[] = [
   { key: "dataLancamento", label: "Lançamento da rede" },
 ];
 
-export default function NotasAnalisadas() {
+export default function NotasAnalisadas({
+  onEdit,
+}: {
+  onEdit?: (id: string) => void;
+} = {}) {
   const notas = useNotas();
   const [query, setQuery] = useState("");
 
