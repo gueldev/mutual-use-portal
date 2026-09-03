@@ -269,12 +269,25 @@ function Index() {
               <TriagemSolicitacao />
             </div>
           ) : view === "formulario-notas" ? (
-            <div key={view} className="animate-rise">
-              <FormularioNotas />
+            <div key={`${view}-${editId ?? "novo"}`} className="animate-rise">
+              <FormularioNotas
+                editId={editId}
+                onSaved={() => {
+                  if (editId) {
+                    setEditId(null);
+                    setView("notas");
+                  }
+                }}
+              />
             </div>
           ) : view === "notas" ? (
             <div key={view} className="animate-rise">
-              <NotasAnalisadas />
+              <NotasAnalisadas
+                onEdit={(id) => {
+                  setEditId(id);
+                  setView("formulario-notas");
+                }}
+              />
             </div>
           ) : (
 
