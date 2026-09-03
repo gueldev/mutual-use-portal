@@ -180,8 +180,11 @@ const intError = (v: string, label: string) => {
   return "";
 };
 
-function validate(f: Form, reprova: Reprova): Record<string, string> {
-  const e: Record<string, string> = {};
+type ErrKey = keyof Form | "reprova" | `outro_${DocKey}`;
+type Errors = Partial<Record<ErrKey, string>>;
+
+function validate(f: Form, reprova: Reprova): Errors {
+  const e: Errors = {};
 
   const pf = intError(f.pontosFaturados, "Quantidade de pontos faturados");
   if (pf) e.pontosFaturados = pf;
@@ -218,7 +221,7 @@ function validate(f: Form, reprova: Reprova): Record<string, string> {
     REPROVA_DOCS.forEach((d) => {
       const item = reprova[d.key];
       if (item.motivos.includes("OUTRA") && !item.outro.trim())
-        e[`outro_${d.key}`] = "Descreva o outro motivo.";
+        e[`outro_${d.key}` as ErrKey] = "Descreva o outro motivo.";
     });
   }
 
@@ -320,7 +323,7 @@ export default function FormularioNotas() {
     setSaved("");
   };
   const blur = (k: string) => setTouched((p) => ({ ...p, [k]: true }));
-  const t = (k: string) => touched[k];
+  const t = (k: string) => Boolean(touched[k]);
 
   const setDoc = (key: DocKey, patch: Partial<{ motivos: string[]; outro: string }>) => {
     setReprova((p) => ({ ...p, [key]: { ...p[key], ...patch } }));
@@ -660,7 +663,7 @@ export default function FormularioNotas() {
                           {item.motivos.includes("OUTRA") && (
                             <Field
                               label="Descreva outro motivo"
-                              error={errors[`outro_${d.key}`]}
+                              error={errors[`outro_${d.key}` as ErrKey]}
                               touched={t(`outro_${d.key}`)}
                               full
                             >
