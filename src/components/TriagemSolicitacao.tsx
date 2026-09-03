@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   ArrowRight,
   Building2,
   CheckCircle2,
+  ChevronDown,
   ClipboardList,
   FileUp,
   HelpCircle,
