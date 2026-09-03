@@ -12,6 +12,8 @@ import {
 
 import MultiSelect from "@/components/MultiSelect";
 import { maskCNPJ, isValidCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
+import { addNota } from "@/lib/notas-store";
+
 import { cn } from "@/lib/utils";
 
 /* ---------- catálogo de motivos de reprovação ---------- */
@@ -386,7 +388,31 @@ export default function FormularioNotas() {
 
     const etapa = form.etapaAnalise === "Outra" ? form.etapaOutra.trim() : form.etapaAnalise;
 
+    addNota({
+      nota: form.nota.trim(),
+      analisadoPor: form.analisadoPor,
+      pontosFaturados: form.pontosFaturados,
+      equipamentosFaturados: form.equipamentosFaturados,
+      pontosAgrupados: form.pontosAgrupados,
+      projeto5g: form.projeto5g,
+      etapaAnalise: etapa,
+      empresa: form.empresa.trim(),
+      cnpj: form.cnpj,
+      enderecoEmpresa: form.enderecoEmpresa.trim(),
+      municipio: form.municipio.trim(),
+      responsavel: form.responsavel.trim(),
+      email: form.email.trim(),
+      dataAnalise: form.dataAnalise,
+      statusNota: form.statusNota,
+      observacao: form.observacao.trim(),
+      valorPonto: form.valorPonto,
+      pontosRevelia: form.pontosRevelia,
+      dataLancamento: form.dataLancamento,
+      motivosReprovacao,
+    });
+
     setSaved(form.statusNota);
+
     setLog((p) => [
       {
         at: new Date().toLocaleString("pt-BR"),
@@ -606,6 +632,23 @@ export default function FormularioNotas() {
             />
           </Field>
 
+          <Field
+            label="Endereço Empresa"
+            error={errors.enderecoEmpresa}
+            touched={t("enderecoEmpresa")}
+            full
+          >
+            <input
+              value={form.enderecoEmpresa}
+              onChange={(e) => set("enderecoEmpresa", e.target.value)}
+              onBlur={() => blur("enderecoEmpresa")}
+              placeholder="Rua, número, bairro, cidade"
+              className={inputCls}
+            />
+          </Field>
+
+
+
           <Field label="Município da obra" error={errors.municipio} touched={t("municipio")}>
             <input
               value={form.municipio}
@@ -630,7 +673,12 @@ export default function FormularioNotas() {
             />
           </Field>
 
-          <Field label="E-mail para contato" error={errors.email} touched={t("email")}>
+          <Field
+            label="E-mail do Responsável Técnico"
+            error={errors.email}
+            touched={t("email")}
+          >
+
             <input
               type="email"
               value={form.email}
