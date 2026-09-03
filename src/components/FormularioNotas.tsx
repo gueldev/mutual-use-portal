@@ -503,6 +503,26 @@ export default function FormularioNotas() {
             />
           </Field>
 
+          <Field
+            label="Quantidade de pontos agrupados"
+            error={errors.pontosAgrupados}
+            touched={t("pontosAgrupados")}
+          >
+            <input
+              type="number"
+              min={0}
+              step={1}
+              inputMode="numeric"
+              value={form.pontosAgrupados}
+              onChange={(e) => set("pontosAgrupados", e.target.value)}
+              onBlur={() => blur("pontosAgrupados")}
+              placeholder="0"
+              className={inputCls}
+            />
+          </Field>
+
+
+
           <Field label="Projeto 5G?" error={errors.projeto5g} touched={t("projeto5g")}>
             <select
               value={form.projeto5g}
