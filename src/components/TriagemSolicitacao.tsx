@@ -667,19 +667,12 @@ export default function TriagemSolicitacao() {
             touched={isTouched("municipio")}
             value={form.municipio}
           >
-            <select
-              className={inputCls}
+            <MunicipioCombobox
               value={form.municipio}
-              onChange={(e) => set("municipio", e.target.value)}
+              onChange={(v) => set("municipio", v)}
               onBlur={() => blur("municipio")}
-            >
-              <option value="">Selecione o município…</option>
-              {PE_MUNICIPIOS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
+              className={inputCls}
+            />
           </Field>
           <Field label="Nome da Rota" error={errors.rota} touched={isTouched("rota")} value={form.rota}>
             <input
