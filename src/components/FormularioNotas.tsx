@@ -520,7 +520,7 @@ export default function FormularioNotas({
 
     const etapa = form.etapaAnalise === "Outra" ? form.etapaOutra.trim() : form.etapaAnalise;
 
-    addNota({
+    const payload = {
       nota: form.nota.trim(),
       analisadoPor: form.analisadoPor,
       pontosFaturados: form.pontosFaturados,
@@ -541,14 +541,17 @@ export default function FormularioNotas({
       pontosRevelia: form.pontosRevelia,
       dataLancamento: form.dataLancamento,
       motivosReprovacao,
-    });
+    };
+
+    if (editId) updateNota(editId, payload);
+    else addNota(payload);
 
     setSaved(form.statusNota);
 
     setLog((p) => [
       {
         at: new Date().toLocaleString("pt-BR"),
-        action: `Análise ${form.statusNota}`,
+        action: `Análise ${form.statusNota}${editId ? " (editada)" : ""}`,
         detail: `${form.empresa} · etapa ${etapa}${
           motivosReprovacao.length
             ? ` · ${selectedCount} motivo(s) em ${motivosReprovacao.length} documento(s)`
@@ -557,6 +560,13 @@ export default function FormularioNotas({
       },
       ...p,
     ]);
+
+    // limpa todos os campos após salvar
+    setForm(initialForm);
+    setReprova(emptyReprova());
+    setTouched({});
+    setOpenDoc("solicitacaoAnalise");
+    onSaved?.();
   };
 
   const handleCancel = () => {
