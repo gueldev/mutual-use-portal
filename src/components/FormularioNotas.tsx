@@ -12,7 +12,7 @@ import {
 
 import MultiSelect from "@/components/MultiSelect";
 import { maskCNPJ, isValidCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
-import { addNota } from "@/lib/notas-store";
+import { addNota, getNota, updateNota } from "@/lib/notas-store";
 import { PE_MUNICIPIOS } from "@/lib/pe-municipios";
 
 import { cn } from "@/lib/utils";
