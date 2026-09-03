@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ClipboardList, Search } from "lucide-react";
+import { ClipboardList, Pencil, Search } from "lucide-react";
 
 import { useNotas } from "@/lib/notas-store";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,11 @@ const columns: { key: string; label: string }[] = [
   { key: "dataLancamento", label: "Lançamento da rede" },
 ];
 
-export default function NotasAnalisadas() {
+export default function NotasAnalisadas({
+  onEdit,
+}: {
+  onEdit?: (id: string) => void;
+} = {}) {
   const notas = useNotas();
   const [query, setQuery] = useState("");
 
@@ -100,6 +104,9 @@ export default function NotasAnalisadas() {
                       {c.label}
                     </th>
                   ))}
+                  <th className="whitespace-nowrap px-4 py-3 text-right font-semibold text-foreground">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -134,6 +141,16 @@ export default function NotasAnalisadas() {
                           )}
                         </td>
                       ))}
+                      <td className="whitespace-nowrap px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => onEdit?.(n.id)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-input px-2.5 py-1.5 text-[0.7rem] font-semibold text-foreground transition-colors hover:bg-secondary/60"
+                        >
+                          <Pencil className="size-3" />
+                          Editar
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}

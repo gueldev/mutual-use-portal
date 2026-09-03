@@ -12,7 +12,7 @@ import {
 
 import MultiSelect from "@/components/MultiSelect";
 import { maskCNPJ, isValidCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
-import { addNota } from "@/lib/notas-store";
+import { addNota, getNota, updateNota } from "@/lib/notas-store";
 import { PE_MUNICIPIOS } from "@/lib/pe-municipios";
 
 import { cn } from "@/lib/utils";
@@ -423,13 +423,56 @@ function Field({
 
 /* ---------- componente principal ---------- */
 
-export default function FormularioNotas() {
+export default function FormularioNotas({
+  editId = null,
+  onSaved,
+}: {
+  editId?: string | null;
+  onSaved?: () => void;
+} = {}) {
   const [form, setForm] = useState<Form>(initialForm);
   const [reprova, setReprova] = useState<Reprova>(emptyReprova);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [openDoc, setOpenDoc] = useState<DocKey | null>("solicitacaoAnalise");
   const [saved, setSaved] = useState<string>("");
   const [log, setLog] = useState<{ at: string; action: string; detail: string }[]>([]);
+
+  useEffect(() => {
+    if (!editId) return;
+    const n = getNota(editId);
+    if (!n) return;
+    const etapaPadrao = ["1", "2", "3", "4"].includes(n.etapaAnalise);
+    setForm({
+      nota: n.nota,
+      analisadoPor: n.analisadoPor,
+      pontosFaturados: n.pontosFaturados,
+      equipamentosFaturados: n.equipamentosFaturados,
+      pontosAgrupados: n.pontosAgrupados,
+      projeto5g: n.projeto5g,
+      etapaAnalise: etapaPadrao ? n.etapaAnalise : "Outra",
+      etapaOutra: etapaPadrao ? "" : n.etapaAnalise,
+      empresa: n.empresa,
+      cnpj: n.cnpj,
+      enderecoEmpresa: n.enderecoEmpresa,
+      municipio: n.municipio,
+      responsavel: n.responsavel,
+      email: n.email,
+      dataAnalise: n.dataAnalise,
+      statusNota: n.statusNota,
+      observacao: n.observacao,
+      valorPonto: n.valorPonto,
+      pontosRevelia: n.pontosRevelia,
+      dataLancamento: n.dataLancamento,
+    });
+    const next = emptyReprova();
+    (n.motivosReprovacao ?? []).forEach((m) => {
+      const doc = REPROVA_DOCS.find((d) => d.label === m.documento);
+      if (doc) next[doc.key] = { motivos: m.motivos, outro: m.outro ?? "" };
+    });
+    setReprova(next);
+    setTouched({});
+    setSaved("");
+  }, [editId]);
 
   const errors = useMemo(() => validate(form, reprova), [form, reprova]);
   const errorCount = Object.keys(errors).length;
@@ -477,7 +520,7 @@ export default function FormularioNotas() {
 
     const etapa = form.etapaAnalise === "Outra" ? form.etapaOutra.trim() : form.etapaAnalise;
 
-    addNota({
+    const payload = {
       nota: form.nota.trim(),
       analisadoPor: form.analisadoPor,
       pontosFaturados: form.pontosFaturados,
@@ -498,14 +541,17 @@ export default function FormularioNotas() {
       pontosRevelia: form.pontosRevelia,
       dataLancamento: form.dataLancamento,
       motivosReprovacao,
-    });
+    };
+
+    if (editId) updateNota(editId, payload);
+    else addNota(payload);
 
     setSaved(form.statusNota);
 
     setLog((p) => [
       {
         at: new Date().toLocaleString("pt-BR"),
-        action: `Análise ${form.statusNota}`,
+        action: `Análise ${form.statusNota}${editId ? " (editada)" : ""}`,
         detail: `${form.empresa} · etapa ${etapa}${
           motivosReprovacao.length
             ? ` · ${selectedCount} motivo(s) em ${motivosReprovacao.length} documento(s)`
@@ -514,6 +560,13 @@ export default function FormularioNotas() {
       },
       ...p,
     ]);
+
+    // limpa todos os campos após salvar
+    setForm(initialForm);
+    setReprova(emptyReprova());
+    setTouched({});
+    setOpenDoc("solicitacaoAnalise");
+    onSaved?.();
   };
 
   const handleCancel = () => {

@@ -64,6 +64,14 @@ export function addNota(nota: Omit<NotaRegistro, "id" | "criadoEm">): NotaRegist
   return registro;
 }
 
+export function updateNota(id: string, patch: Omit<NotaRegistro, "id" | "criadoEm">): void {
+  write(read().map((n) => (n.id === id ? { ...patch, id: n.id, criadoEm: n.criadoEm } : n)));
+}
+
+export function getNota(id: string): NotaRegistro | undefined {
+  return read().find((n) => n.id === id);
+}
+
 export function useNotas(): NotaRegistro[] {
   const [notas, setNotas] = useState<NotaRegistro[]>([]);
 

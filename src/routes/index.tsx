@@ -93,10 +93,12 @@ function Index() {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(true);
   const [view, setView] = useState<ViewKey>("solicitacoes");
+  const [editId, setEditId] = useState<string | null>(null);
 
   const select = (key: ViewKey) => {
     setView(key);
     setOpen(false);
+    if (key !== "formulario-notas") setEditId(null);
   };
 
   const itemClass = (active: boolean) =>
@@ -267,12 +269,25 @@ function Index() {
               <TriagemSolicitacao />
             </div>
           ) : view === "formulario-notas" ? (
-            <div key={view} className="animate-rise">
-              <FormularioNotas />
+            <div key={`${view}-${editId ?? "novo"}`} className="animate-rise">
+              <FormularioNotas
+                editId={editId}
+                onSaved={() => {
+                  if (editId) {
+                    setEditId(null);
+                    setView("notas");
+                  }
+                }}
+              />
             </div>
           ) : view === "notas" ? (
             <div key={view} className="animate-rise">
-              <NotasAnalisadas />
+              <NotasAnalisadas
+                onEdit={(id) => {
+                  setEditId(id);
+                  setView("formulario-notas");
+                }}
+              />
             </div>
           ) : (
 
