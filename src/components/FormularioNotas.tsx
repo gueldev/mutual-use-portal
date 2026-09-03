@@ -229,6 +229,8 @@ function validate(f: Form, reprova: Reprova): Errors {
   else if (!isValidCNPJ(f.cnpj)) e.cnpj = "CNPJ inválido.";
 
   if (!f.municipio.trim()) e.municipio = "Município da obra é obrigatório.";
+  else if (!PE_MUNICIPIOS.some((m) => m.toLowerCase() === f.municipio.trim().toLowerCase()))
+    e.municipio = "Selecione um município de Pernambuco da lista.";
   if (!f.responsavel.trim()) e.responsavel = "Nome do Responsável Técnico é obrigatório.";
 
   if (!f.email.trim()) e.email = "E-mail é obrigatório.";
