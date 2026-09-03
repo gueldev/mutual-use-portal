@@ -14,6 +14,8 @@ import {
 
 import TriagemSolicitacao from "@/components/TriagemSolicitacao";
 import FormularioNotas from "@/components/FormularioNotas";
+import NotasAnalisadas from "@/components/NotasAnalisadas";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -60,7 +62,11 @@ const views: Record<ViewKey, { label: string; description: string }> = {
     label: "Formulário de Notas",
     description: "Registro de notas técnicas dos projetos.",
   },
-  notas: { label: "Notas", description: "Consulta das notas emitidas." },
+  notas: {
+    label: "Notas analisadas",
+    description: "Consulta das notas emitidas.",
+  },
+
   "analise-tecnica": {
     label: "Análise Técnica de Projetos",
     description: "Etapa 2 — avaliação técnica dos projetos aprovados.",
@@ -79,7 +85,7 @@ const views: Record<ViewKey, { label: string; description: string }> = {
 const subItems: { key: ViewKey; label: string }[] = [
   { key: "minutas-sub", label: "Minutas" },
   { key: "formulario-notas", label: "Formulário de Notas" },
-  { key: "notas", label: "Notas" },
+  { key: "notas", label: "Notas analisadas" },
   { key: "analise-tecnica", label: "Análise Técnica de Projetos" },
 ];
 

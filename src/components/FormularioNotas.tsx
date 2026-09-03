@@ -12,6 +12,8 @@ import {
 
 import MultiSelect from "@/components/MultiSelect";
 import { maskCNPJ, isValidCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
+import { addNota } from "@/lib/notas-store";
+
 import { cn } from "@/lib/utils";
 
 /* ---------- catálogo de motivos de reprovação ---------- */
