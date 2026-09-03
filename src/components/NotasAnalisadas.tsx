@@ -104,6 +104,9 @@ export default function NotasAnalisadas({
                       {c.label}
                     </th>
                   ))}
+                  <th className="whitespace-nowrap px-4 py-3 text-right font-semibold text-foreground">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody>
