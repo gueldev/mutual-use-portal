@@ -439,7 +439,35 @@ export default function FormularioNotas() {
           title="Dados da análise"
           subtitle="Quantitativos faturados e identificação da etapa"
         >
+          <Field label="Nota" error={errors.nota} touched={t("nota")} hint="Número da nota.">
+            <input
+              value={form.nota}
+              onChange={(e) => set("nota", e.target.value)}
+              onBlur={() => blur("nota")}
+              inputMode="numeric"
+              placeholder="Ex.: 9201234567"
+              className={inputCls}
+            />
+          </Field>
+
+          <Field label="Analisado por" error={errors.analisadoPor} touched={t("analisadoPor")}>
+            <select
+              value={form.analisadoPor}
+              onChange={(e) => set("analisadoPor", e.target.value)}
+              onBlur={() => blur("analisadoPor")}
+              className={inputCls}
+            >
+              <option value="">Selecione</option>
+              {ANALISTAS.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          </Field>
+
           <Field
+
             label="Quantidade de pontos faturados"
             error={errors.pontosFaturados}
             touched={t("pontosFaturados")}
