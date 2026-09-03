@@ -338,7 +338,7 @@ export default function FormularioNotas() {
       Object.keys(initialForm).forEach((k) => {
         next[k] = true;
       });
-      next.reprova = true;
+      next["reprova"] = true;
       REPROVA_DOCS.forEach((d) => {
         next[`outro_${d.key}`] = true;
       });
@@ -683,7 +683,7 @@ export default function FormularioNotas() {
                 })}
               </div>
 
-              {touched.reprova && errors.reprova && (
+              {t("reprova") && errors.reprova && (
                 <p className="flex items-center gap-1 text-[0.7rem] font-medium text-destructive">
                   <AlertCircle className="size-3" /> {errors.reprova}
                 </p>
