@@ -15,6 +15,7 @@ import {
 import TriagemSolicitacao from "@/components/TriagemSolicitacao";
 import FormularioNotas from "@/components/FormularioNotas";
 import NotasAnalisadas from "@/components/NotasAnalisadas";
+import BaseSolicitacoes from "@/components/BaseSolicitacoes";
 
 
 export const Route = createFileRoute("/")({
@@ -55,8 +56,8 @@ const views: Record<ViewKey, { label: string; description: string }> = {
     description: "Triagem e acompanhamento de solicitações de uso mútuo.",
   },
   "minutas-sub": {
-    label: "Minutas",
-    description: "Minutas vinculadas à análise de projetos.",
+    label: "Base de Solicitações",
+    description: "Solicitações cadastradas na triagem.",
   },
   "formulario-notas": {
     label: "Formulário de Notas",
@@ -83,7 +84,7 @@ const views: Record<ViewKey, { label: string; description: string }> = {
 };
 
 const subItems: { key: ViewKey; label: string }[] = [
-  { key: "minutas-sub", label: "Minutas" },
+  { key: "minutas-sub", label: "Base de Solicitações" },
   { key: "formulario-notas", label: "Formulário de Notas" },
   { key: "notas", label: "Notas analisadas" },
   { key: "analise-tecnica", label: "Análise Técnica de Projetos" },
@@ -94,11 +95,13 @@ function Index() {
   const [expanded, setExpanded] = useState(true);
   const [view, setView] = useState<ViewKey>("solicitacoes");
   const [editId, setEditId] = useState<string | null>(null);
+  const [editSolicitacaoId, setEditSolicitacaoId] = useState<string | null>(null);
 
   const select = (key: ViewKey) => {
     setView(key);
     setOpen(false);
     if (key !== "formulario-notas") setEditId(null);
+    if (key !== "solicitacoes") setEditSolicitacaoId(null);
   };
 
   const itemClass = (active: boolean) =>
@@ -265,8 +268,28 @@ function Index() {
 
         <main className="flex-1">
           {view === "solicitacoes" ? (
+            <div
+              key={`${view}-${editSolicitacaoId ?? "novo"}`}
+              className="animate-rise"
+            >
+              <TriagemSolicitacao
+                editId={editSolicitacaoId}
+                onSaved={() => {
+                  if (editSolicitacaoId) {
+                    setEditSolicitacaoId(null);
+                    setView("minutas-sub");
+                  }
+                }}
+              />
+            </div>
+          ) : view === "minutas-sub" ? (
             <div key={view} className="animate-rise">
-              <TriagemSolicitacao />
+              <BaseSolicitacoes
+                onEdit={(id) => {
+                  setEditSolicitacaoId(id);
+                  setView("solicitacoes");
+                }}
+              />
             </div>
           ) : view === "formulario-notas" ? (
             <div key={`${view}-${editId ?? "novo"}`} className="animate-rise">
