@@ -20,6 +20,11 @@ import {
 } from "lucide-react";
 import { EMAIL_REGEX, isValidCNPJ, maskCNPJ } from "@/lib/cnpj";
 import { PE_MUNICIPIOS } from "@/lib/pe-municipios";
+import {
+  addSolicitacao,
+  getSolicitacao,
+  updateSolicitacao,
+} from "@/lib/solicitacoes-store";
 import { cn } from "@/lib/utils";
 
 type Status = "" | "Aprovado" | "Pendente" | "Rejeitado";
@@ -337,7 +342,13 @@ const inputCls =
 
 /* ---------- componente principal ---------- */
 
-export default function TriagemSolicitacao() {
+export default function TriagemSolicitacao({
+  editId = null,
+  onSaved,
+}: {
+  editId?: string | null;
+  onSaved?: () => void;
+} = {}) {
   const [form, setForm] = useState<Form>(initialForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [files, setFiles] = useState<Record<DocKey, File[]>>({
@@ -422,10 +433,41 @@ export default function TriagemSolicitacao() {
       ...l,
     ]);
 
+  useEffect(() => {
+    if (!editId) return;
+    const s = getSolicitacao(editId);
+    if (!s) return;
+    setForm({
+      cnpj: s.cnpj,
+      razaoSocial: s.razaoSocial,
+      plaqueta: s.plaqueta,
+      tn: s.tn,
+      notaProjeto: s.notaProjeto,
+      pontosNovos: s.pontosNovos,
+      pontosAgrupados: s.pontosAgrupados,
+      equipamentos: s.equipamentos,
+      projeto5g: s.projeto5g,
+      municipio: s.municipio,
+      rota: s.rota,
+      responsavel: s.responsavel,
+      email: s.email,
+      status: s.status as Status,
+      justificativa: s.justificativa,
+    });
+    setTouched({});
+    setSaved("");
+  }, [editId]);
+
   const handleSave = () => {
     setTouched(Object.fromEntries(requiredFieldKeys.map((k) => [k, true])));
     if (!canSave) return;
     setSaved(form.status);
+    const payload = {
+      ...form,
+      documentos: DOCS.flatMap((d) => files[d.key].map((f) => f.name)),
+    };
+    if (editId) updateSolicitacao(editId, payload);
+    else addSolicitacao(payload);
     registerLog(
       form.status === "Aprovado"
         ? "Triagem aprovada"
@@ -434,6 +476,11 @@ export default function TriagemSolicitacao() {
           : "Triagem rejeitada",
       `TN ${form.tn} · ${form.razaoSocial} · ${files.planta.length + 3} documento(s) anexado(s)`,
     );
+    setForm(initialForm);
+    setTouched({});
+    setFiles({ projetoTecnico: [], art: [], memorial: [], planta: [], comprovanteCnpj: [] });
+    setDocErrors({});
+    onSaved?.();
   };
 
   const handleCancel = () => {
