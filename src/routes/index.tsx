@@ -77,7 +77,7 @@ const views: Record<ViewKey, { label: string; description: string }> = {
 };
 
 const solicitacoesItems: { key: ViewKey; label: string }[] = [
-  { key: "solicitações", label: "Solicitações" },
+  { key: "solicitacoes", label: "Solicitações" },
   { key: "minutas-sub", label: "Base de Solicitações" },
 ];
 
