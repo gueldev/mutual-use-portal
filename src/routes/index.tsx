@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Activity,
   ChevronDown,
   FileSpreadsheet,
   FileText,
@@ -45,7 +44,6 @@ type ViewKey =
   | "minutas-sub"
   | "formulario-notas"
   | "notas"
-  | "analise-tecnica"
   | "minutas"
   | "incrementos"
   | "log";
@@ -67,11 +65,6 @@ const views: Record<ViewKey, { label: string; description: string }> = {
     label: "Notas analisadas",
     description: "Consulta das notas emitidas.",
   },
-
-  "analise-tecnica": {
-    label: "Análise Técnica de Projetos",
-    description: "Etapa 2 — avaliação técnica dos projetos aprovados.",
-  },
   minutas: { label: "Minutas", description: "Gestão de minutas contratuais." },
   incrementos: {
     label: "Incrementos",
@@ -83,19 +76,33 @@ const views: Record<ViewKey, { label: string; description: string }> = {
   },
 };
 
-const subItems: { key: ViewKey; label: string }[] = [
+const solicitacoesItems: { key: ViewKey; label: string }[] = [
+  { key: "solicitacoes", label: "Solicitações" },
   { key: "minutas-sub", label: "Base de Solicitações" },
+];
+
+const notasItems: { key: ViewKey; label: string }[] = [
   { key: "formulario-notas", label: "Formulário de Notas" },
   { key: "notas", label: "Notas analisadas" },
-  { key: "analise-tecnica", label: "Análise Técnica de Projetos" },
 ];
+
+const solicitacoesGroup: ViewKey[] = ["solicitacoes", "minutas-sub"];
+const notasGroup: ViewKey[] = ["formulario-notas", "notas"];
 
 function Index() {
   const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState(true);
   const [view, setView] = useState<ViewKey>("solicitacoes");
   const [editId, setEditId] = useState<string | null>(null);
   const [editSolicitacaoId, setEditSolicitacaoId] = useState<string | null>(null);
+  const [openSolicitacoes, setOpenSolicitacoes] = useState(
+    solicitacoesGroup.includes(view),
+  );
+  const [openNotas, setOpenNotas] = useState(notasGroup.includes(view));
+
+  useEffect(() => {
+    setOpenSolicitacoes(solicitacoesGroup.includes(view));
+    setOpenNotas(notasGroup.includes(view));
+  }, [view]);
 
   const select = (key: ViewKey) => {
     setView(key);
@@ -112,7 +119,12 @@ function Index() {
     }`;
 
   const current = views[view];
-  const inAnalise = subItems.some((s) => s.key === view);
+
+  const groupLabel = solicitacoesGroup.includes(view)
+    ? "Solicitações"
+    : notasGroup.includes(view)
+      ? "Notas"
+      : null;
 
   return (
     <div className="min-h-screen bg-background font-sans md:flex">
@@ -153,35 +165,73 @@ function Index() {
             Menu
           </p>
 
+          {/* Grupo: Solicitações */}
           <button
-            onClick={() => select("solicitacoes")}
-            className={itemClass(view === "solicitacoes")}
+            onClick={() => setOpenSolicitacoes((v) => !v)}
+            aria-expanded={openSolicitacoes}
+            className={itemClass(solicitacoesGroup.includes(view))}
           >
             <Search className="size-4" />
-            Solicitações
-          </button>
-
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            className={itemClass(inAnalise && !expanded)}
-          >
-            <Activity className="size-4" />
-            <span className="flex-1 text-left">Análise de Projetos</span>
+            <span className="flex-1 text-left">Solicitações</span>
             <ChevronDown
               className={`size-4 transition-transform duration-300 ${
-                expanded ? "" : "-rotate-90"
+                openSolicitacoes ? "" : "-rotate-90"
               }`}
             />
           </button>
-
           <div
             className={`grid transition-all duration-300 ease-out ${
-              expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              openSolicitacoes
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0"
             }`}
           >
             <ul className="ml-5 space-y-0.5 overflow-hidden border-l border-primary-foreground/25 pl-3">
-              {subItems.map((s) => (
+              {solicitacoesItems.map((s) => (
+                <li key={s.key}>
+                  <button
+                    onClick={() => select(s.key)}
+                    className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[0.82rem] font-medium transition-all duration-200 ${
+                      view === s.key
+                        ? "bg-brand-dark/60 text-primary-foreground"
+                        : "opacity-90 hover:bg-brand-dark/50 hover:translate-x-0.5"
+                    }`}
+                  >
+                    <span
+                      className={`shrink-0 rounded-full bg-primary-foreground transition-all ${
+                        view === s.key ? "size-2" : "size-1.5 opacity-85"
+                      }`}
+                    />
+                    {s.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Grupo: Notas */}
+          <button
+            onClick={() => setOpenNotas((v) => !v)}
+            aria-expanded={openNotas}
+            className={itemClass(notasGroup.includes(view))}
+          >
+            <FileSpreadsheet className="size-4" />
+            <span className="flex-1 text-left">Notas</span>
+            <ChevronDown
+              className={`size-4 transition-transform duration-300 ${
+                openNotas ? "" : "-rotate-90"
+              }`}
+            />
+          </button>
+          <div
+            className={`grid transition-all duration-300 ease-out ${
+              openNotas
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <ul className="ml-5 space-y-0.5 overflow-hidden border-l border-primary-foreground/25 pl-3">
+              {notasItems.map((s) => (
                 <li key={s.key}>
                   <button
                     onClick={() => select(s.key)}
@@ -251,9 +301,9 @@ function Index() {
             <nav className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Portal</span>
               <span className="text-border">/</span>
-              {inAnalise && (
+              {groupLabel && (
                 <>
-                  <span className="text-muted-foreground">Análise de Projetos</span>
+                  <span className="text-muted-foreground">{groupLabel}</span>
                   <span className="text-border">/</span>
                 </>
               )}
