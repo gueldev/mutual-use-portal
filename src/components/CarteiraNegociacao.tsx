@@ -91,7 +91,7 @@ export default function CarteiraNegociacao() {
                 onChange={(e) => set("documento", e.target.value.replace(/\D/g, "").slice(0, 14))}
               />
             </Field>
-            <Field label="CC" error={err("cc")}>
+            <Field label="Conta Contrato" error={err("cc")}>
               <input className={inputCls} inputMode="numeric" placeholder="Somente números" value={dados.cc} onChange={(e) => set("cc", e.target.value.replace(/\D/g, ""))} />
             </Field>
             <Field label="Nome do Parceiro" error={err("nomeParceiro")} full>
