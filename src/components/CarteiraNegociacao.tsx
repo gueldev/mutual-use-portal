@@ -44,7 +44,9 @@ export default function CarteiraNegociacao() {
   const [saved, setSaved] = useState(false);
 
   const errors = validarDadosCliente(dados);
-  const err = (k: keyof DadosCliente) => (submitted ? errors[k] : undefined);
+  const docLen = dados.documento.length;
+  const err = (k: keyof DadosCliente) =>
+    submitted || (k === "documento" && (docLen === 11 || docLen === 14)) ? errors[k] : undefined;
   const set = (k: keyof DadosCliente, v: string) => {
     setSaved(false);
     setDados((p) => ({ ...p, [k]: v }));
@@ -65,7 +67,7 @@ export default function CarteiraNegociacao() {
         onSubmit={(e) => {
           e.preventDefault();
           setSubmitted(true);
-          if (Object.keys(errors).length === 0) setSaved(true);
+          setSaved(Object.keys(errors).length === 0);
         }}
       >
         <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
