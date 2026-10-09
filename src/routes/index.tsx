@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  Briefcase,
   ChevronDown,
   FileSpreadsheet,
   FileText,
@@ -15,6 +16,7 @@ import TriagemSolicitacao from "@/components/TriagemSolicitacao";
 import FormularioNotas from "@/components/FormularioNotas";
 import NotasAnalisadas from "@/components/NotasAnalisadas";
 import BaseSolicitacoes from "@/components/BaseSolicitacoes";
+import CarteiraNegociacao from "@/components/CarteiraNegociacao";
 
 
 export const Route = createFileRoute("/")({
@@ -46,6 +48,7 @@ type ViewKey =
   | "notas"
   | "minutas"
   | "incrementos"
+  | "carteira"
   | "log";
 
 const views: Record<ViewKey, { label: string; description: string }> = {
@@ -69,6 +72,10 @@ const views: Record<ViewKey, { label: string; description: string }> = {
   incrementos: {
     label: "Incrementos",
     description: "Controle de incrementos de pontos e equipamentos.",
+  },
+  carteira: {
+    label: "Carteira de Negociação",
+    description: "Dados e acompanhamento da negociação com clientes.",
   },
   log: {
     label: "Log do Sistema",
@@ -267,6 +274,13 @@ function Index() {
             <TrendingUp className="size-4" />
             Incrementos
           </button>
+          <button
+            onClick={() => select("carteira")}
+            className={itemClass(view === "carteira")}
+          >
+            <Briefcase className="size-4" />
+            Carteira de Negociação
+          </button>
 
           <p className="px-3 pb-2 pt-6 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70">
             Ferramentas
@@ -362,8 +376,11 @@ function Index() {
                 }}
               />
             </div>
+          ) : view === "carteira" ? (
+            <div key={view} className="animate-rise">
+              <CarteiraNegociacao />
+            </div>
           ) : (
-
             <div
               key={view}
               className="animate-rise flex flex-1 items-center justify-center px-6 py-20"
