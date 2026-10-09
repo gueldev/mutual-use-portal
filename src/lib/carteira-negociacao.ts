@@ -51,6 +51,7 @@ export function validarDadosCliente(v: DadosCliente): Partial<Record<keyof Dados
   else if (d.length === 11 ? !isValidCPF(d) : d.length === 14 ? !isValidCNPJ(d) : true)
     e.documento = "CNPJ/CPF inválido.";
   if (!v.cc.trim()) e.cc = "Informe o CC.";
+  else if (!/^\d+$/.test(v.cc)) e.cc = "O CC deve conter somente números.";
   if (!v.nomeParceiro.trim()) e.nomeParceiro = "Informe o nome do parceiro.";
   if (!v.razaoSocial.trim()) e.razaoSocial = "Informe a razão social.";
   if (!v.nomeFantasia.trim()) e.nomeFantasia = "Informe o nome fantasia.";
