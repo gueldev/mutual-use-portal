@@ -92,7 +92,7 @@ export default function CarteiraNegociacao() {
               />
             </Field>
             <Field label="Conta Contrato" error={err("cc")}>
-              <input className={inputCls} inputMode="numeric" placeholder="Somente números" value={dados.cc} onChange={(e) => set("cc", e.target.value.replace(/\D/g, ""))} />
+              <input className={inputCls} inputMode="numeric" maxLength={10} placeholder="10 dígitos" value={dados.cc} onChange={(e) => set("cc", e.target.value.replace(/\D/g, "").slice(0, 10))} />
             </Field>
             <Field label="Nome do Parceiro" error={err("nomeParceiro")} full>
               <input className={inputCls} value={dados.nomeParceiro} onChange={(e) => set("nomeParceiro", e.target.value)} />
@@ -102,6 +102,9 @@ export default function CarteiraNegociacao() {
             </Field>
             <Field label="Nome Fantasia" error={err("nomeFantasia")}>
               <input className={inputCls} value={dados.nomeFantasia} onChange={(e) => set("nomeFantasia", e.target.value)} />
+            </Field>
+            <Field label="Plaqueta" error={err("plaqueta")}>
+              <input className={inputCls} value={dados.plaqueta} onChange={(e) => set("plaqueta", e.target.value)} />
             </Field>
           </div>
         </section>

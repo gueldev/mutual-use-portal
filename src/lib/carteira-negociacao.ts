@@ -7,6 +7,7 @@ export type DadosCliente = {
   nomeParceiro: string;
   razaoSocial: string;
   nomeFantasia: string;
+  plaqueta: string;
 };
 
 export const emptyDadosCliente: DadosCliente = {
@@ -15,6 +16,7 @@ export const emptyDadosCliente: DadosCliente = {
   nomeParceiro: "",
   razaoSocial: "",
   nomeFantasia: "",
+  plaqueta: "",
 };
 
 export function maskCpfCnpj(value: string): string {
@@ -50,11 +52,12 @@ export function validarDadosCliente(v: DadosCliente): Partial<Record<keyof Dados
   if (!d) e.documento = "Informe o CNPJ ou CPF.";
   else if (d.length === 11 ? !isValidCPF(d) : d.length === 14 ? !isValidCNPJ(d) : true)
     e.documento = "CNPJ/CPF inválido.";
-  if (!v.cc.trim()) e.cc = "Informe o CC.";
-  else if (!/^\d+$/.test(v.cc)) e.cc = "O CC deve conter somente números.";
+  if (!v.cc.trim()) e.cc = "Informe a Conta Contrato.";
+  else if (!/^\d{10}$/.test(v.cc)) e.cc = "A Conta Contrato deve ter exatamente 10 dígitos.";
   if (!v.nomeParceiro.trim()) e.nomeParceiro = "Informe o nome do parceiro.";
   if (!v.razaoSocial.trim()) e.razaoSocial = "Informe a razão social.";
   if (!v.nomeFantasia.trim()) e.nomeFantasia = "Informe o nome fantasia.";
+  if (!v.plaqueta.trim()) e.plaqueta = "Informe a plaqueta.";
   return e;
 }
 
