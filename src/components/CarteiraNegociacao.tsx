@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { AlertCircle, CheckCircle2, Save, UserRound } from "lucide-react";
+import { AlertCircle, CheckCircle2, FileText, Save, UserRound } from "lucide-react";
 
 import {
   emptyDadosCliente,
@@ -19,12 +19,14 @@ function Field({
   children,
   full,
   required = true,
+  hint,
 }: {
   label: string;
   error?: string | undefined;
   children: ReactNode;
   full?: boolean;
   required?: boolean;
+  hint?: string;
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", full && "md:col-span-2")}>
@@ -32,6 +34,7 @@ function Field({
         {label} {required && <span className="text-brand">*</span>}
       </label>
       <div className={cn("rounded-xl", error && "ring-2 ring-destructive/35")}>{children}</div>
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
       {error && (
         <p className="flex items-center gap-1 text-[0.7rem] font-medium text-destructive">
           <AlertCircle className="size-3" /> {error}
@@ -114,6 +117,41 @@ export default function CarteiraNegociacao() {
             </Field>
             <Field label="Nome Fantasia" error={err("nomeFantasia")}>
               <input className={inputCls} value={dados.nomeFantasia} onChange={(e) => set("nomeFantasia", e.target.value)} />
+            </Field>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-5 md:p-6" aria-labelledby="dados-contrato">
+          <header className="mb-5 flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-brand-dark">
+              <FileText className="size-5" />
+            </span>
+            <div>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Seção 2</p>
+              <h2 id="dados-contrato" className="text-base font-semibold text-primary">Dados do Contrato</h2>
+            </div>
+          </header>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Nº Contrato" required={false}>
+              <input className={inputCls} aria-label="Nº Contrato" value={dados.numeroContrato} onChange={(e) => set("numeroContrato", e.target.value)} />
+            </Field>
+            <Field label="Início Vigência" required={false}>
+              <input className={inputCls} type="date" aria-label="Início Vigência" value={dados.inicioVigencia} onChange={(e) => set("inicioVigencia", e.target.value)} />
+            </Field>
+            <Field label="Preço do Ponto" required={false}>
+              <input className={inputCls} type="number" step="0.01" aria-label="Preço do Ponto" placeholder="R$ 0,00" value={dados.precoPonto} onChange={(e) => set("precoPonto", e.target.value)} />
+            </Field>
+            <Field label="Qtd Pontos Censo" required={false}>
+              <input className={inputCls} type="number" step="1" aria-label="Qtd Pontos Censo" value={dados.qtdPontosCenso} onChange={(e) => set("qtdPontosCenso", e.target.value)} />
+            </Field>
+            <Field label="Qtd Pontos à Revelia" required={false}>
+              <input className={inputCls} type="number" step="1" aria-label="Qtd Pontos à Revelia" value={dados.qtdPontosRevelia} onChange={(e) => set("qtdPontosRevelia", e.target.value)} />
+            </Field>
+            <Field label="Data Início" required={false} hint="Lançamento da rede">
+              <input className={inputCls} type="date" aria-label="Data Início" value={dados.dataInicio} onChange={(e) => set("dataInicio", e.target.value)} />
+            </Field>
+            <Field label="Data Fim" required={false} hint="Data final para cálculo do retroativo">
+              <input className={inputCls} type="date" aria-label="Data Fim" value={dados.dataFim} onChange={(e) => set("dataFim", e.target.value)} />
             </Field>
           </div>
         </section>
