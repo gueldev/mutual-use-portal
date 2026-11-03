@@ -3,6 +3,8 @@ import { AlertCircle, CheckCircle2, FileText, Save, UserRound } from "lucide-rea
 
 import {
   emptyDadosCliente,
+  calcularMesesRetroativo,
+  calcularValoresNegociacao,
   maskCpfCnpj,
   validarDadosCliente,
   type DadosCliente,
@@ -12,6 +14,9 @@ import { Button } from "@/components/ui/button";
 
 const inputCls =
   "w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-brand";
+
+const moeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const formatarValor = (valor: string) => valor === "" ? "" : moeda.format(Number(valor));
 
 function Field({
   label,
@@ -50,12 +55,16 @@ export default function CarteiraNegociacao() {
   const [saved, setSaved] = useState(false);
 
   const errors = validarDadosCliente(dados);
+  const mesesRetroativo = calcularMesesRetroativo(dados.dataInicio, dados.dataFim);
   const docLen = dados.documento.length;
   const err = (k: keyof DadosCliente) =>
     submitted || (k === "documento" && (docLen === 11 || docLen === 14)) ? errors[k] : undefined;
   const set = (k: keyof DadosCliente, v: string) => {
     setSaved(false);
-    setDados((p) => ({ ...p, [k]: v }));
+    setDados((p) => {
+      const proximo = { ...p, [k]: v };
+      return { ...proximo, ...calcularValoresNegociacao(proximo) };
+    });
   };
 
   return (
@@ -152,6 +161,21 @@ export default function CarteiraNegociacao() {
             </Field>
             <Field label="Data Fim" required={false} hint="Data final para cálculo do retroativo">
               <input className={inputCls} type="date" aria-label="Data Fim" value={dados.dataFim} onChange={(e) => set("dataFim", e.target.value)} />
+            </Field>
+            <Field label="Implemento Calculado (R$)" required={false}>
+              <input className={cn(inputCls, "bg-muted font-semibold")} aria-label="Implemento Calculado (R$)" readOnly placeholder="R$ —" value={formatarValor(dados.implementoCalculado)} />
+            </Field>
+            <Field label="Retroativo Calculado (R$)" required={false} hint={mesesRetroativo === null ? undefined : `Período considerado: ${mesesRetroativo} ${mesesRetroativo === 1 ? "mês" : "meses"}`}>
+              <input className={cn(inputCls, "bg-muted font-semibold")} aria-label="Retroativo Calculado (R$)" readOnly placeholder="R$ —" value={formatarValor(dados.retroativoCalculado)} />
+            </Field>
+            <Field label="Focal" required={false}>
+              <input className={inputCls} aria-label="Focal" value={dados.focal} onChange={(e) => set("focal", e.target.value)} />
+            </Field>
+            <Field label="Implemento Acumulado" required={false}>
+              <input className={cn(inputCls, "bg-muted font-semibold")} aria-label="Implemento Acumulado" readOnly placeholder="R$ —" value={formatarValor(dados.implementoAcumulado)} />
+            </Field>
+            <Field label="Mês do Implemento" required={false}>
+              <input className={inputCls} type="month" aria-label="Mês do Implemento" value={dados.mesImplemento} onChange={(e) => set("mesImplemento", e.target.value)} />
             </Field>
           </div>
         </section>
