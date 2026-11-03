@@ -8,6 +8,7 @@ import {
   type DadosCliente,
 } from "@/lib/carteira-negociacao";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const inputCls =
   "w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-brand";
@@ -17,16 +18,18 @@ function Field({
   error,
   children,
   full,
+  required = true,
 }: {
   label: string;
   error?: string | undefined;
   children: ReactNode;
   full?: boolean;
+  required?: boolean;
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", full && "md:col-span-2")}>
       <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-        {label} <span className="text-brand">*</span>
+        {label} {required && <span className="text-brand">*</span>}
       </label>
       <div className={cn("rounded-xl", error && "ring-2 ring-destructive/35")}>{children}</div>
       {error && (
@@ -82,6 +85,12 @@ export default function CarteiraNegociacao() {
             </div>
           </header>
           <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Nº Notificação" required={false}>
+              <input className={inputCls} aria-label="Nº Notificação" value={dados.numeroNotificacao} onChange={(e) => set("numeroNotificacao", e.target.value)} />
+            </Field>
+            <Field label="Data Notificação" required={false}>
+              <input className={inputCls} type="date" aria-label="Data Notificação" value={dados.dataNotificacao} onChange={(e) => set("dataNotificacao", e.target.value)} />
+            </Field>
             <Field label="CNPJ/CPF" error={err("documento")}>
               <input
                 className={inputCls}
@@ -115,8 +124,9 @@ export default function CarteiraNegociacao() {
               <CheckCircle2 className="size-4" /> Dados do cliente validados.
             </p>
           )}
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => {
               setDados(emptyDadosCliente);
               setSubmitted(false);
@@ -125,13 +135,13 @@ export default function CarteiraNegociacao() {
             className="rounded-xl border border-border px-6 py-2.5 text-sm font-semibold text-foreground hover:bg-secondary"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             className="flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             <Save className="size-4" /> Salvar
-          </button>
+          </Button>
         </div>
       </form>
     </div>

@@ -2,6 +2,8 @@ import { isValidCNPJ } from "@/lib/cnpj";
 
 /** Seção 1 — Dados do Cliente. Novas seções serão adicionadas a este modelo. */
 export type DadosCliente = {
+  numeroNotificacao: string;
+  dataNotificacao: string;
   documento: string; // CNPJ/CPF somente dígitos
   cc: string;
   nomeParceiro: string;
@@ -11,6 +13,8 @@ export type DadosCliente = {
 };
 
 export const emptyDadosCliente: DadosCliente = {
+  numeroNotificacao: "",
+  dataNotificacao: "",
   documento: "",
   cc: "",
   nomeParceiro: "",
