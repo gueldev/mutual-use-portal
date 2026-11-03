@@ -1,6 +1,6 @@
 import { isValidCNPJ } from "@/lib/cnpj";
 
-/** Seção 1 — Dados do Cliente. Novas seções serão adicionadas a este modelo. */
+/** Dados da carteira: cliente e contrato. Novas seções serão adicionadas a este modelo. */
 export type DadosCliente = {
   numeroNotificacao: string;
   dataNotificacao: string;
@@ -10,6 +10,13 @@ export type DadosCliente = {
   razaoSocial: string;
   nomeFantasia: string;
   plaqueta: string;
+  numeroContrato: string;
+  inicioVigencia: string;
+  precoPonto: string;
+  qtdPontosCenso: string;
+  qtdPontosRevelia: string;
+  dataInicio: string;
+  dataFim: string;
 };
 
 export const emptyDadosCliente: DadosCliente = {
@@ -21,6 +28,13 @@ export const emptyDadosCliente: DadosCliente = {
   razaoSocial: "",
   nomeFantasia: "",
   plaqueta: "",
+  numeroContrato: "",
+  inicioVigencia: "",
+  precoPonto: "",
+  qtdPontosCenso: "",
+  qtdPontosRevelia: "",
+  dataInicio: "",
+  dataFim: "",
 };
 
 export function maskCpfCnpj(value: string): string {
