@@ -1,4 +1,5 @@
 import { isValidCNPJ } from "@/lib/cnpj";
+import { addMonths, differenceInCalendarDays, differenceInMonths, isValid, parseISO } from "date-fns";
 
 /** Dados da carteira: cliente e contrato. Novas seções serão adicionadas a este modelo. */
 export type DadosCliente = {
@@ -17,6 +18,11 @@ export type DadosCliente = {
   qtdPontosRevelia: string;
   dataInicio: string;
   dataFim: string;
+  implementoCalculado: string;
+  retroativoCalculado: string;
+  focal: string;
+  implementoAcumulado: string;
+  mesImplemento: string;
 };
 
 export const emptyDadosCliente: DadosCliente = {
@@ -35,7 +41,39 @@ export const emptyDadosCliente: DadosCliente = {
   qtdPontosRevelia: "",
   dataInicio: "",
   dataFim: "",
+  implementoCalculado: "",
+  retroativoCalculado: "",
+  focal: "",
+  implementoAcumulado: "",
+  mesImplemento: "",
 };
+
+/** Meses completos, acrescidos de um mês quando o restante atingir cinco dias. */
+export function calcularMesesRetroativo(dataInicio: string, dataFim: string): number | null {
+  if (!dataInicio || !dataFim) return null;
+  const inicio = parseISO(dataInicio);
+  const fim = parseISO(dataFim);
+  if (!isValid(inicio) || !isValid(fim) || fim < inicio) return null;
+  const meses = differenceInMonths(fim, inicio);
+  const diasRestantes = differenceInCalendarDays(fim, addMonths(inicio, meses));
+  return meses + (diasRestantes >= 5 ? 1 : 0);
+}
+
+export function calcularValoresNegociacao(dados: DadosCliente): Pick<DadosCliente, "implementoCalculado" | "retroativoCalculado" | "implementoAcumulado"> {
+  const preco = Number(dados.precoPonto);
+  const pontos = Number(dados.qtdPontosRevelia);
+  const valores = { implementoCalculado: "", retroativoCalculado: "", implementoAcumulado: "" };
+  if (!dados.precoPonto.trim() || !dados.qtdPontosRevelia.trim() || !Number.isFinite(preco) || !Number.isFinite(pontos)) return valores;
+  const implemento = pontos * preco;
+  valores.implementoCalculado = implemento.toFixed(2);
+  const meses = calcularMesesRetroativo(dados.dataInicio, dados.dataFim);
+  if (meses !== null) valores.retroativoCalculado = (implemento * meses).toFixed(2);
+  if (/^\d{4}-(0[1-9]|1[0-2])$/.test(dados.mesImplemento)) {
+    const mesesRestantes = 12 - Number(dados.mesImplemento.slice(5));
+    valores.implementoAcumulado = (implemento * mesesRestantes).toFixed(2);
+  }
+  return valores;
+}
 
 export function maskCpfCnpj(value: string): string {
   const d = value.replace(/\D/g, "").slice(0, 14);
