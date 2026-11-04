@@ -194,27 +194,29 @@ export default function CarteiraNegociacao() {
             <Field label="Condição de Pagamento" required={false}>
               <OpcaoNegociacao label="Condição de Pagamento" value={dados.condicaoPagamento} options={["À Vista", "Parcelado"]} onChange={(v) => set("condicaoPagamento", v)} />
             </Field>
-            <Field label="Parcelado: quantidade de parcelas" required={false}>
+            {dados.condicaoPagamento === "Parcelado" && <Field label="Parcelado: quantidade de parcelas" required={false}>
               <input className={inputCls} type="number" step="1" aria-label="Parcelado: quantidade de parcelas" value={dados.qtdParcelas} onChange={(e) => set("qtdParcelas", e.target.value)} />
-            </Field>
+            </Field>}
             <Field label="Exceção a Matriz" required={false}>
               <OpcaoNegociacao label="Exceção a Matriz" value={dados.excecaoMatriz} options={["Sim", "Não"]} onChange={(v) => set("excecaoMatriz", v)} />
             </Field>
             <Field label="Desconto" required={false}>
               <OpcaoNegociacao label="Desconto" value={dados.desconto} options={["Sim", "Não"]} onChange={(v) => set("desconto", v)} />
             </Field>
-            <Field label="% Desconto" required={false}>
+            {dados.desconto === "Sim" && <Field label="% Desconto" required={false}>
               <input className={inputCls} type="number" step="0.01" aria-label="% Desconto" placeholder="0,00%" value={dados.percentualDesconto} onChange={(e) => set("percentualDesconto", e.target.value)} />
-            </Field>
+            </Field>}
             <Field label="Multa" required={false}>
               <OpcaoNegociacao label="Multa" value={dados.multa} options={["Sim", "Não"]} onChange={(v) => set("multa", v)} />
             </Field>
+            {dados.multa === "Sim" && <>
             <Field label="% Multa" required={false}>
               <input className={inputCls} type="number" step="0.01" aria-label="% Multa" placeholder="0,00%" value={dados.percentualMulta} onChange={(e) => set("percentualMulta", e.target.value)} />
             </Field>
             <Field label="Valor da Multa" required={false}>
               <input className={inputCls} type="number" step="0.01" aria-label="Valor da Multa" placeholder="R$ 0,00" value={dados.valorMulta} onChange={(e) => set("valorMulta", e.target.value)} />
             </Field>
+            </>}
             <Field label="Retroativo Negociado" required={false}>
               <input className={inputCls} type="number" step="0.01" aria-label="Retroativo Negociado" placeholder="R$ 0,00" value={dados.retroativoNegociado} onChange={(e) => set("retroativoNegociado", e.target.value)} />
             </Field>
