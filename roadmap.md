@@ -7,3 +7,4 @@
 
 - [x] Acrescentar condições de pagamento, quantidade de parcelas, exceção à matriz, desconto, multa e valores negociados à Seção 2.
 - [x] Conferir preenchimento, troca da condição de pagamento e limpeza dos novos campos sem alterar cálculos anteriores.
+- [x] Mostrar parcelas apenas em Parcelado, percentual de desconto apenas com Desconto Sim e percentual/valor da multa apenas com Multa Sim.
