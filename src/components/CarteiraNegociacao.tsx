@@ -31,7 +31,7 @@ function Field({
   children: ReactNode;
   full?: boolean;
   required?: boolean;
-  hint?: string;
+  hint?: string | undefined;
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", full && "md:col-span-2")}>
