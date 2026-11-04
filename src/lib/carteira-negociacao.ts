@@ -23,6 +23,16 @@ export type DadosCliente = {
   focal: string;
   implementoAcumulado: string;
   mesImplemento: string;
+  condicaoPagamento: string;
+  qtdParcelas: string;
+  excecaoMatriz: string;
+  desconto: string;
+  percentualDesconto: string;
+  multa: string;
+  percentualMulta: string;
+  valorMulta: string;
+  retroativoNegociado: string;
+  contasReceberNegociado: string;
 };
 
 export const emptyDadosCliente: DadosCliente = {
@@ -46,6 +56,16 @@ export const emptyDadosCliente: DadosCliente = {
   focal: "",
   implementoAcumulado: "",
   mesImplemento: "",
+  condicaoPagamento: "",
+  qtdParcelas: "",
+  excecaoMatriz: "",
+  desconto: "",
+  percentualDesconto: "",
+  multa: "",
+  percentualMulta: "",
+  valorMulta: "",
+  retroativoNegociado: "",
+  contasReceberNegociado: "",
 };
 
 /** Meses completos, acrescidos de um mês quando o restante atingir cinco dias. */
