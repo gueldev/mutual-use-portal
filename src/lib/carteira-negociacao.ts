@@ -33,6 +33,12 @@ export type DadosCliente = {
   valorMulta: string;
   retroativoNegociado: string;
   contasReceberNegociado: string;
+  observacoes: string;
+  municipioLocalPrestacao: string;
+  setor: string;
+  statusProjeto: string;
+  origemRetroativo: string;
+  dataConclusaoNegociacao: string;
 };
 
 export const emptyDadosCliente: DadosCliente = {
@@ -66,6 +72,12 @@ export const emptyDadosCliente: DadosCliente = {
   valorMulta: "",
   retroativoNegociado: "",
   contasReceberNegociado: "",
+  observacoes: "",
+  municipioLocalPrestacao: "",
+  setor: "",
+  statusProjeto: "",
+  origemRetroativo: "",
+  dataConclusaoNegociacao: "",
 };
 
 /** Meses completos, acrescidos de um mês quando o restante atingir cinco dias. */
