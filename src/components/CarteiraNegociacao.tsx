@@ -229,6 +229,38 @@ export default function CarteiraNegociacao() {
           </div>
         </section>
 
+        <section className="rounded-2xl border border-border bg-card p-5 md:p-6" aria-labelledby="conclusao-negociacao">
+          <header className="mb-5 flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-brand-dark">
+              <FileText className="size-5" />
+            </span>
+            <div>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Seção 3</p>
+              <h2 id="conclusao-negociacao" className="text-base font-semibold text-primary">Informações da Negociação</h2>
+            </div>
+          </header>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Observações" required={false} full>
+              <textarea className={cn(inputCls, "min-h-24 resize-y")} aria-label="Observações" rows={3} value={dados.observacoes} onChange={(e) => set("observacoes", e.target.value)} />
+            </Field>
+            <Field label="Município/Local de prestação" required={false}>
+              <input className={inputCls} aria-label="Município/Local de prestação" value={dados.municipioLocalPrestacao} onChange={(e) => set("municipioLocalPrestacao", e.target.value)} />
+            </Field>
+            <Field label="Setor" required={false}>
+              <OpcaoNegociacao label="Setor" value={dados.setor} options={["norte", "sul", "metropolitano", "centro", "centro oeste", "oeste"]} onChange={(v) => set("setor", v)} />
+            </Field>
+            <Field label="Status Projeto" required={false}>
+              <OpcaoNegociacao label="Status Projeto" value={dados.statusProjeto} options={["Aguardando", "Aprovado"]} onChange={(v) => set("statusProjeto", v)} />
+            </Field>
+            <Field label="Origem do Retroativo" required={false}>
+              <OpcaoNegociacao label="Origem do Retroativo" value={dados.origemRetroativo} options={["Censo", "Ação de Campo", "Projeto", "Fiscalização", "Notificação", "Baixados", "Ação de Cobrança"]} onChange={(v) => set("origemRetroativo", v)} />
+            </Field>
+            <Field label="Data de Conclusão da Negociação" required={false}>
+              <input className={inputCls} type="date" aria-label="Data de Conclusão da Negociação" value={dados.dataConclusaoNegociacao} onChange={(e) => set("dataConclusaoNegociacao", e.target.value)} />
+            </Field>
+          </div>
+        </section>
+
         <div className="flex flex-col-reverse items-center justify-end gap-3 sm:flex-row">
           {saved && (
             <p className="mr-auto flex items-center gap-1.5 text-xs font-medium text-brand">
