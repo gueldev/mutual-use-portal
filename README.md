@@ -1,11 +1,6 @@
+# Portal Uso Mútuo — Neoenergia Pernambuco
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/a54bceea-aa8d-4b63-8da5-fbc435f8447b).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+Portal de solicitações, análise de notas e negociação para a equipe de Uso Mútuo.
 
 ## Development
 
