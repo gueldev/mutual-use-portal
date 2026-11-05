@@ -27,7 +27,7 @@ export type DadosCliente = {
   qtdParcelas: string;
   excecaoMatriz: string;
   desconto: string;
-  valorDesconto: string;
+  percentualDesconto: string;
   multa: string;
   percentualMulta: string;
   valorMulta: string;
@@ -60,7 +60,7 @@ export const emptyDadosCliente: DadosCliente = {
   qtdParcelas: "",
   excecaoMatriz: "",
   desconto: "",
-  valorDesconto: "",
+  percentualDesconto: "",
   multa: "",
   percentualMulta: "",
   valorMulta: "",

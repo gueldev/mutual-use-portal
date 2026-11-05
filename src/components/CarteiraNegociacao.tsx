@@ -203,8 +203,11 @@ export default function CarteiraNegociacao() {
             <Field label="Desconto" required={false}>
               <OpcaoNegociacao label="Desconto" value={dados.desconto} options={["Sim", "Não"]} onChange={(v) => set("desconto", v)} />
             </Field>
-            {dados.desconto === "Sim" && <Field label="Valor do Desconto (R$)" required={false}>
-              <input className={inputCls} type="number" step="0.01" aria-label="Valor do Desconto (R$)" placeholder="R$ 0,00" value={dados.valorDesconto} onChange={(e) => set("valorDesconto", e.target.value)} />
+            {dados.desconto === "Sim" && <Field label="% Desconto" required={false}>
+              <div className="relative">
+                <input className={cn(inputCls, "pr-12")} type="number" step="0.01" aria-label="% Desconto" placeholder="0,00" value={dados.percentualDesconto} onChange={(e) => set("percentualDesconto", e.target.value)} />
+                {dados.percentualDesconto !== "" && <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-8 flex items-center text-sm text-muted-foreground">%</span>}
+              </div>
             </Field>}
             <Field label="Multa" required={false}>
               <OpcaoNegociacao label="Multa" value={dados.multa} options={["Sim", "Não"]} onChange={(v) => set("multa", v)} />
