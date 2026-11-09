@@ -1,4 +1,5 @@
 import { isValidCNPJ } from "@/lib/cnpj";
+import { PE_MUNICIPIOS } from "@/lib/pe-municipios";
 import { addMonths, differenceInCalendarDays, differenceInMonths, isValid, parseISO } from "date-fns";
 
 /** Dados da carteira: cliente e contrato. Novas seções serão adicionadas a este modelo. */
@@ -146,6 +147,8 @@ export function validarDadosCliente(v: DadosCliente): Partial<Record<keyof Dados
   if (!v.razaoSocial.trim()) e.razaoSocial = "Informe a razão social.";
   if (!v.nomeFantasia.trim()) e.nomeFantasia = "Informe o nome fantasia.";
   if (!v.plaqueta.trim()) e.plaqueta = "Informe a plaqueta.";
+  if (v.municipioLocalPrestacao.trim() && !PE_MUNICIPIOS.some((m) => m.toLowerCase() === v.municipioLocalPrestacao.trim().toLowerCase()))
+    e.municipioLocalPrestacao = "Selecione um município de Pernambuco da lista.";
   return e;
 }
 

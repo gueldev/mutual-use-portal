@@ -1,6 +1,6 @@
 import { describe, test } from "node:test";
 import { deepStrictEqual, strictEqual } from "node:assert";
-import { calcularMesesRetroativo, calcularValoresNegociacao, emptyDadosCliente } from "./carteira-negociacao";
+import { calcularMesesRetroativo, calcularValoresNegociacao, emptyDadosCliente, validarDadosCliente } from "./carteira-negociacao";
 
 describe("cálculos da Seção 2", () => {
   test("implemento multiplica pontos pelo preço", () => {
@@ -23,5 +23,9 @@ describe("cálculos da Seção 2", () => {
   test("campos vazios não geram valores e períodos invertidos não geram retroativo", () => {
     deepStrictEqual(calcularValoresNegociacao(emptyDadosCliente), { implementoCalculado: "", retroativoCalculado: "", implementoAcumulado: "" });
     strictEqual(calcularMesesRetroativo("2026-05-10", "2026-01-01"), null);
+  });
+  test("município de prestação preenchido deve pertencer à lista de Pernambuco", () => {
+    strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Recife" }).municipioLocalPrestacao, undefined);
+    strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Município inexistente" }).municipioLocalPrestacao, "Selecione um município de Pernambuco da lista.");
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
   CalendarDays,
@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 
 import MultiSelect from "@/components/MultiSelect";
+import MunicipioCombobox from "@/components/MunicipioCombobox";
 import { maskCNPJ, isValidCNPJ, EMAIL_REGEX } from "@/lib/cnpj";
 import { addNota, getNota, updateNota } from "@/lib/notas-store";
 import { PE_MUNICIPIOS } from "@/lib/pe-municipios";
+import { ANALISTAS } from "@/lib/responsaveis";
 
 import { cn } from "@/lib/utils";
 
@@ -138,14 +140,6 @@ const emptyReprova = (): Reprova =>
     return acc;
   }, {} as Reprova);
 
-const ANALISTAS = [
-  "FELIPE TELES FONSECA",
-  "JAILSON SEVERINO DOS SANTOS",
-  "ALESSANDRA FELICIANO DA SILVA",
-  "MARLON DAVIS GUIMARAES CARNEIRO",
-  "NADIRLENE CAVALCANTI LEITE LINS E MELLO",
-];
-
 type Form = {
   nota: string;
   analisadoPor: string;
@@ -191,92 +185,6 @@ const initialForm: Form = {
   pontosRevelia: "",
   dataLancamento: "",
 };
-
-/* ---------- combobox de municípios (digitável, restrito à lista) ---------- */
-
-function MunicipioCombobox({
-  value,
-  onChange,
-  onBlur,
-  className,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  onBlur: () => void;
-  className?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const boxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onDoc = (ev: MouseEvent) => {
-      if (boxRef.current && !boxRef.current.contains(ev.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, []);
-
-  const term = (open ? query : value).trim().toLowerCase();
-  const options = useMemo(
-    () => (term ? PE_MUNICIPIOS.filter((m) => m.toLowerCase().includes(term)) : PE_MUNICIPIOS),
-    [term],
-  );
-
-  return (
-    <div ref={boxRef} className="relative">
-      <input
-        value={open ? query : value}
-        onFocus={() => {
-          setQuery(value);
-          setOpen(true);
-        }}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setOpen(true);
-        }}
-        onBlur={() => {
-          if (!open) onBlur();
-        }}
-        role="combobox"
-        aria-expanded={open}
-        placeholder="Ex.: Recife"
-        className={className}
-        autoComplete="off"
-      />
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-      {open && (
-        <ul className="absolute z-30 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-panel">
-          {options.length === 0 ? (
-            <li className="px-3 py-2 text-xs text-muted-foreground">
-              Nenhum município encontrado.
-            </li>
-          ) : (
-            options.map((m) => (
-              <li key={m}>
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    onChange(m);
-                    setOpen(false);
-                    onBlur();
-                  }}
-                  className={cn(
-                    "w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors hover:bg-secondary",
-                    m === value && "bg-secondary font-medium",
-                  )}
-                >
-                  {m}
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
-      )}
-    </div>
-  );
-}
 
 
 const intError = (v: string, label: string) => {
@@ -793,6 +701,7 @@ export default function FormularioNotas({
 
           <Field label="Município da obra" error={errors.municipio} touched={t("municipio")}>
             <MunicipioCombobox
+              label="Município da obra"
               value={form.municipio}
               onChange={(v) => set("municipio", v)}
               onBlur={() => blur("municipio")}

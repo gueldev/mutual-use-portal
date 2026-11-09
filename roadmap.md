@@ -9,3 +9,6 @@
 - [x] Conferir preenchimento, troca da condição de pagamento e limpeza dos novos campos sem alterar cálculos anteriores.
 - [x] Mostrar parcelas apenas em Parcelado, percentual de desconto apenas com Desconto Sim e percentual/valor da multa apenas com Multa Sim.
 - [x] Adicionar a Seção 3 com observações, município/local, setor, status, origem do retroativo e data de conclusão; conferir preenchimento e limpeza.
+- [x] Usar a mesma lista de analistas no Focal e em Analisado por, incluindo ANNESHERLLY ALCELITA FERREIRA DE ARAUJO.
+- [x] Aplicar o seletor restrito aos municípios de Pernambuco no Município/Local de prestação e iniciar as opções de Setor com letras maiúsculas.
+- [x] Permitir ajuste manual independente dos três valores calculados, preservando o cálculo automático e a opção de restaurá-lo; conferir na página.

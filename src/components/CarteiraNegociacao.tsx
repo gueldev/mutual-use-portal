@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { AlertCircle, CheckCircle2, FileText, Save, UserRound } from "lucide-react";
+import { AlertCircle, Check, CheckCircle2, FileText, Pencil, RotateCcw, Save, UserRound } from "lucide-react";
 
 import {
   emptyDadosCliente,
@@ -9,7 +9,9 @@ import {
   validarDadosCliente,
   type DadosCliente,
 } from "@/lib/carteira-negociacao";
+import { ANALISTAS } from "@/lib/responsaveis";
 import { cn } from "@/lib/utils";
+import MunicipioCombobox from "@/components/MunicipioCombobox";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -63,10 +65,78 @@ function Field({
   );
 }
 
+type ValorCalculadoKey = "implementoCalculado" | "retroativoCalculado" | "implementoAcumulado";
+
+type CampoCalculadoProps = {
+  label: string;
+  value: string;
+  editedValue?: string | undefined;
+  editing: boolean;
+  hint?: string | undefined;
+  onEdit: () => void;
+  onFinish: () => void;
+  onChange: (value: string) => void;
+  onReset: () => void;
+};
+
+function CampoCalculado({
+  label,
+  value,
+  editedValue,
+  editing,
+  hint,
+  onEdit,
+  onFinish,
+  onChange,
+  onReset,
+}: CampoCalculadoProps) {
+  const valorAtual = editedValue ?? value;
+  const dica = [hint, editedValue !== undefined ? "Valor ajustado manualmente." : ""]
+    .filter(Boolean)
+    .join(" · ");
+
+  return (
+    <Field label={label} required={false} hint={dica || undefined}>
+      <div className="relative">
+        <input
+          className={cn(inputCls, "pr-11 font-semibold", !editing && "bg-muted")}
+          aria-label={label}
+          type={editing ? "number" : "text"}
+          step="0.01"
+          readOnly={!editing}
+          placeholder="R$ —"
+          value={editing ? valorAtual : formatarValor(valorAtual)}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <button
+          type="button"
+          aria-label={editing ? `Concluir edição de ${label}` : `Alterar ${label}`}
+          title={editing ? "Concluir edição" : "Alterar valor manualmente"}
+          onClick={editing ? onFinish : onEdit}
+          className="absolute right-1.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          {editing ? <Check className="size-4" /> : <Pencil className="size-4" />}
+        </button>
+      </div>
+      {editedValue !== undefined && !editing && (
+        <button
+          type="button"
+          onClick={onReset}
+          className="mt-2 flex items-center gap-1.5 text-xs font-medium text-brand hover:underline"
+        >
+          <RotateCcw className="size-3.5" /> Restaurar cálculo automático
+        </button>
+      )}
+    </Field>
+  );
+}
+
 export default function CarteiraNegociacao() {
   const [dados, setDados] = useState<DadosCliente>(emptyDadosCliente);
   const [submitted, setSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [valoresEditados, setValoresEditados] = useState<Partial<Record<ValorCalculadoKey, string>>>({});
+  const [campoEmEdicao, setCampoEmEdicao] = useState<ValorCalculadoKey | null>(null);
 
   const errors = validarDadosCliente(dados);
   const mesesRetroativo = calcularMesesRetroativo(dados.dataInicio, dados.dataFim);
@@ -79,6 +149,23 @@ export default function CarteiraNegociacao() {
       const proximo = { ...p, [k]: v };
       return { ...proximo, ...calcularValoresNegociacao(proximo) };
     });
+  };
+  const iniciarEdicao = (campo: ValorCalculadoKey) => {
+    setSaved(false);
+    setValoresEditados((atuais) => ({ ...atuais, [campo]: atuais[campo] ?? dados[campo] }));
+    setCampoEmEdicao(campo);
+  };
+  const alterarValor = (campo: ValorCalculadoKey, valor: string) => {
+    setSaved(false);
+    setValoresEditados((atuais) => ({ ...atuais, [campo]: valor }));
+  };
+  const restaurarCalculo = (campo: ValorCalculadoKey) => {
+    setValoresEditados((atuais) => {
+      const proximos = { ...atuais };
+      delete proximos[campo];
+      return proximos;
+    });
+    if (campoEmEdicao === campo) setCampoEmEdicao(null);
   };
 
   return (
@@ -176,18 +263,43 @@ export default function CarteiraNegociacao() {
             <Field label="Data Fim" required={false} hint="Data final para cálculo do retroativo">
               <input className={inputCls} type="date" aria-label="Data Fim" value={dados.dataFim} onChange={(e) => set("dataFim", e.target.value)} />
             </Field>
-            <Field label="Implemento Calculado (R$)" required={false}>
-              <input className={cn(inputCls, "bg-muted font-semibold")} aria-label="Implemento Calculado (R$)" readOnly placeholder="R$ —" value={formatarValor(dados.implementoCalculado)} />
-            </Field>
-            <Field label="Retroativo Calculado (R$)" required={false} hint={mesesRetroativo === null ? undefined : `Período considerado: ${mesesRetroativo} ${mesesRetroativo === 1 ? "mês" : "meses"}`}>
-              <input className={cn(inputCls, "bg-muted font-semibold")} aria-label="Retroativo Calculado (R$)" readOnly placeholder="R$ —" value={formatarValor(dados.retroativoCalculado)} />
-            </Field>
+            <CampoCalculado
+              label="Implemento Calculado (R$)"
+              value={dados.implementoCalculado}
+              editedValue={valoresEditados.implementoCalculado}
+              editing={campoEmEdicao === "implementoCalculado"}
+              onEdit={() => iniciarEdicao("implementoCalculado")}
+              onFinish={() => setCampoEmEdicao(null)}
+              onChange={(valor) => alterarValor("implementoCalculado", valor)}
+              onReset={() => restaurarCalculo("implementoCalculado")}
+            />
+            <CampoCalculado
+              label="Retroativo Calculado (R$)"
+              value={dados.retroativoCalculado}
+              editedValue={valoresEditados.retroativoCalculado}
+              editing={campoEmEdicao === "retroativoCalculado"}
+              hint={mesesRetroativo === null ? undefined : `Período considerado: ${mesesRetroativo} ${mesesRetroativo === 1 ? "mês" : "meses"}`}
+              onEdit={() => iniciarEdicao("retroativoCalculado")}
+              onFinish={() => setCampoEmEdicao(null)}
+              onChange={(valor) => alterarValor("retroativoCalculado", valor)}
+              onReset={() => restaurarCalculo("retroativoCalculado")}
+            />
             <Field label="Focal" required={false}>
-              <input className={inputCls} aria-label="Focal" value={dados.focal} onChange={(e) => set("focal", e.target.value)} />
+              <select className={inputCls} aria-label="Focal" value={dados.focal} onChange={(e) => set("focal", e.target.value)}>
+                <option value="">Selecione</option>
+                {ANALISTAS.map((nome) => <option key={nome} value={nome}>{nome}</option>)}
+              </select>
             </Field>
-            <Field label="Implemento Acumulado" required={false}>
-              <input className={cn(inputCls, "bg-muted font-semibold")} aria-label="Implemento Acumulado" readOnly placeholder="R$ —" value={formatarValor(dados.implementoAcumulado)} />
-            </Field>
+            <CampoCalculado
+              label="Implemento Acumulado"
+              value={dados.implementoAcumulado}
+              editedValue={valoresEditados.implementoAcumulado}
+              editing={campoEmEdicao === "implementoAcumulado"}
+              onEdit={() => iniciarEdicao("implementoAcumulado")}
+              onFinish={() => setCampoEmEdicao(null)}
+              onChange={(valor) => alterarValor("implementoAcumulado", valor)}
+              onReset={() => restaurarCalculo("implementoAcumulado")}
+            />
             <Field label="Mês do Implemento" required={false}>
               <input className={inputCls} type="month" aria-label="Mês do Implemento" value={dados.mesImplemento} onChange={(e) => set("mesImplemento", e.target.value)} />
             </Field>
@@ -243,11 +355,17 @@ export default function CarteiraNegociacao() {
             <Field label="Observações" required={false} full>
               <textarea className={cn(inputCls, "min-h-24 resize-y")} aria-label="Observações" rows={3} value={dados.observacoes} onChange={(e) => set("observacoes", e.target.value)} />
             </Field>
-            <Field label="Município/Local de prestação" required={false}>
-              <input className={inputCls} aria-label="Município/Local de prestação" value={dados.municipioLocalPrestacao} onChange={(e) => set("municipioLocalPrestacao", e.target.value)} />
+            <Field label="Município/Local de prestação" required={false} error={err("municipioLocalPrestacao")}>
+              <MunicipioCombobox
+                label="Município/Local de prestação"
+                value={dados.municipioLocalPrestacao}
+                onChange={(valor) => set("municipioLocalPrestacao", valor)}
+                onBlur={() => undefined}
+                className={inputCls}
+              />
             </Field>
             <Field label="Setor" required={false}>
-              <OpcaoNegociacao label="Setor" value={dados.setor} options={["norte", "sul", "metropolitano", "centro", "centro oeste", "oeste"]} onChange={(v) => set("setor", v)} />
+              <OpcaoNegociacao label="Setor" value={dados.setor} options={["Norte", "Sul", "Metropolitano", "Centro", "Centro Oeste", "Oeste"]} onChange={(v) => set("setor", v)} />
             </Field>
             <Field label="Status Projeto" required={false}>
               <OpcaoNegociacao label="Status Projeto" value={dados.statusProjeto} options={["Aguardando", "Aprovado"]} onChange={(v) => set("statusProjeto", v)} />
@@ -272,6 +390,8 @@ export default function CarteiraNegociacao() {
             variant="outline"
             onClick={() => {
               setDados(emptyDadosCliente);
+              setValoresEditados({});
+              setCampoEmEdicao(null);
               setSubmitted(false);
               setSaved(false);
             }}
