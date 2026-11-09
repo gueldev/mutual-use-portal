@@ -145,7 +145,6 @@ export function validarDadosCliente(v: DadosCliente): Partial<Record<keyof Dados
   else if (!/^\d{10}$/.test(v.cc)) e.cc = "A Conta Contrato deve ter exatamente 10 dígitos.";
   if (!v.nomeParceiro.trim()) e.nomeParceiro = "Informe o nome do parceiro.";
   if (!v.razaoSocial.trim()) e.razaoSocial = "Informe a razão social.";
-  if (!v.nomeFantasia.trim()) e.nomeFantasia = "Informe o nome fantasia.";
   if (!v.plaqueta.trim()) e.plaqueta = "Informe a plaqueta.";
   if (v.municipioLocalPrestacao.trim() && !PE_MUNICIPIOS.some((m) => m.toLowerCase() === v.municipioLocalPrestacao.trim().toLowerCase()))
     e.municipioLocalPrestacao = "Selecione um município de Pernambuco da lista.";

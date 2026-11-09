@@ -225,7 +225,7 @@ export default function CarteiraNegociacao() {
             <Field label="Razão Social" error={err("razaoSocial")}>
               <input className={inputCls} value={dados.razaoSocial} onChange={(e) => set("razaoSocial", e.target.value)} />
             </Field>
-            <Field label="Nome Fantasia" error={err("nomeFantasia")}>
+            <Field label="Nome Fantasia" required={false}>
               <input className={inputCls} value={dados.nomeFantasia} onChange={(e) => set("nomeFantasia", e.target.value)} />
             </Field>
           </div>

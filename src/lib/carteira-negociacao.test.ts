@@ -24,6 +24,18 @@ describe("cálculos da Seção 2", () => {
     deepStrictEqual(calcularValoresNegociacao(emptyDadosCliente), { implementoCalculado: "", retroativoCalculado: "", implementoAcumulado: "" });
     strictEqual(calcularMesesRetroativo("2026-05-10", "2026-01-01"), null);
   });
+  test("nome fantasia pode ficar vazio quando os demais campos obrigatórios estão preenchidos", () => {
+    const dados = {
+      ...emptyDadosCliente,
+      documento: "52998224725",
+      cc: "1234567890",
+      nomeParceiro: "Parceiro",
+      razaoSocial: "Razão Social",
+      nomeFantasia: "",
+      plaqueta: "12345",
+    };
+    strictEqual(validarDadosCliente(dados).nomeFantasia, undefined);
+  });
   test("município de prestação preenchido deve pertencer à lista de Pernambuco", () => {
     strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Recife" }).municipioLocalPrestacao, undefined);
     strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Município inexistente" }).municipioLocalPrestacao, "Selecione um município de Pernambuco da lista.");
