@@ -397,7 +397,8 @@ export default function CarteiraNegociacao() {
           </Button>
           <Button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              if (e.detail === 0) return;
               setSubmitted(true);
               setSaved(Object.keys(errors).length === 0);
             }}
