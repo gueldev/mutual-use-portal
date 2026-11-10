@@ -180,11 +180,7 @@ export default function CarteiraNegociacao() {
 
       <form
         className="space-y-5"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSubmitted(true);
-          setSaved(Object.keys(errors).length === 0);
-        }}
+        onSubmit={(e) => e.preventDefault()}
       >
         <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
           <header className="mb-5 flex items-start gap-3">
@@ -400,7 +396,11 @@ export default function CarteiraNegociacao() {
             Cancelar
           </Button>
           <Button
-            type="submit"
+            type="button"
+            onClick={() => {
+              setSubmitted(true);
+              setSaved(Object.keys(errors).length === 0);
+            }}
             className="flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             <Save className="size-4" /> Salvar
