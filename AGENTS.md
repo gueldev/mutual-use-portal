@@ -11,3 +11,4 @@
 
 - Keep the negotiation form's fields in `DadosCliente` and its empty-state factory so clearing the form resets every section field consistently.
 - Keep negotiation calculations in pure helpers alongside the data model and recompute derived amounts when inputs change, so the form and rule tests share one implementation.
+- Keep wallet records in a dedicated browser store matching the existing notes workflow, retaining the full form and manual calculated-value adjustments so editing never loses unlisted fields.

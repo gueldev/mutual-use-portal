@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { AlertCircle, Check, CheckCircle2, FileText, Pencil, RotateCcw, Save, UserRound } from "lucide-react";
 
 import {
@@ -10,6 +10,7 @@ import {
   type DadosCliente,
 } from "@/lib/carteira-negociacao";
 import { ANALISTAS } from "@/lib/responsaveis";
+import { readCarteira, salvarCarteira } from "@/lib/carteira-store";
 import { cn } from "@/lib/utils";
 import MunicipioCombobox from "@/components/MunicipioCombobox";
 import { Button } from "@/components/ui/button";
@@ -131,12 +132,27 @@ function CampoCalculado({
   );
 }
 
-export default function CarteiraNegociacao() {
+export default function CarteiraNegociacao({ editId, onSaved }: { editId?: string | null; onSaved?: () => void } = {}) {
   const [dados, setDados] = useState<DadosCliente>(emptyDadosCliente);
   const [submitted, setSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [loaded, setLoaded] = useState(!editId);
   const [valoresEditados, setValoresEditados] = useState<Partial<Record<ValorCalculadoKey, string>>>({});
   const [campoEmEdicao, setCampoEmEdicao] = useState<ValorCalculadoKey | null>(null);
+
+  useEffect(() => {
+    if (!editId) return;
+    const registro = readCarteira().find((item) => item.id === editId);
+    if (!registro) return;
+    const valoresAutomaticos = calcularValoresNegociacao(registro);
+    setDados({ ...emptyDadosCliente, ...registro, ...valoresAutomaticos });
+    const ajustes: Partial<Record<ValorCalculadoKey, string>> = {};
+    for (const campo of ["implementoCalculado", "retroativoCalculado", "implementoAcumulado"] as const) {
+      if (registro[campo] !== valoresAutomaticos[campo]) ajustes[campo] = registro[campo];
+    }
+    setValoresEditados(ajustes);
+    setLoaded(true);
+  }, [editId]);
 
   const errors = validarDadosCliente(dados);
   const mesesRetroativo = calcularMesesRetroativo(dados.dataInicio, dados.dataFim);
@@ -167,6 +183,8 @@ export default function CarteiraNegociacao() {
     });
     if (campoEmEdicao === campo) setCampoEmEdicao(null);
   };
+
+  if (!loaded) return <p className="p-8 text-sm text-muted-foreground">Carregando negociação…</p>;
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 md:px-8">
@@ -400,7 +418,19 @@ export default function CarteiraNegociacao() {
             onClick={(e) => {
               if (e.detail === 0) return;
               setSubmitted(true);
-              setSaved(Object.keys(errors).length === 0);
+              if (Object.keys(errors).length > 0) return;
+              try {
+                salvarCarteira({ ...dados, ...valoresEditados }, editId);
+              } catch {
+                window.alert("Não foi possível salvar. Verifique o armazenamento do navegador e tente novamente.");
+                return;
+              }
+              setDados(emptyDadosCliente);
+              setValoresEditados({});
+              setCampoEmEdicao(null);
+              setSubmitted(false);
+              setSaved(true);
+              onSaved?.();
             }}
             className="flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >

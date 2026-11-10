@@ -17,6 +17,8 @@ import FormularioNotas from "@/components/FormularioNotas";
 import NotasAnalisadas from "@/components/NotasAnalisadas";
 import BaseSolicitacoes from "@/components/BaseSolicitacoes";
 import CarteiraNegociacao from "@/components/CarteiraNegociacao";
+import BaseCarteira from "@/components/BaseCarteira";
+import { Button } from "@/components/ui/button";
 
 
 export const Route = createFileRoute("/")({
@@ -49,6 +51,7 @@ type ViewKey =
   | "minutas"
   | "incrementos"
   | "carteira"
+  | "base-carteira"
   | "log";
 
 const views: Record<ViewKey, { label: string; description: string }> = {
@@ -77,6 +80,10 @@ const views: Record<ViewKey, { label: string; description: string }> = {
     label: "Carteira de Negociação",
     description: "Dados e acompanhamento da negociação com clientes.",
   },
+  "base-carteira": {
+    label: "Base da carteira",
+    description: "Negociações cadastradas na Carteira de Negociação.",
+  },
   log: {
     label: "Log do Sistema",
     description: "Histórico de ações realizadas no portal.",
@@ -101,6 +108,7 @@ function Index() {
   const [view, setView] = useState<ViewKey>("solicitacoes");
   const [editId, setEditId] = useState<string | null>(null);
   const [editSolicitacaoId, setEditSolicitacaoId] = useState<string | null>(null);
+  const [editCarteiraId, setEditCarteiraId] = useState<string | null>(null);
   const [openSolicitacoes, setOpenSolicitacoes] = useState(
     solicitacoesGroup.includes(view),
   );
@@ -116,6 +124,7 @@ function Index() {
     setOpen(false);
     if (key !== "formulario-notas") setEditId(null);
     if (key !== "solicitacoes") setEditSolicitacaoId(null);
+    if (key !== "carteira") setEditCarteiraId(null);
   };
 
   const itemClass = (active: boolean) =>
@@ -281,6 +290,10 @@ function Index() {
             <Briefcase className="size-4" />
             Carteira de Negociação
           </button>
+          <Button variant="ghost" onClick={() => select("base-carteira")} className={itemClass(view === "base-carteira")}>
+            <Briefcase className="size-4" />
+            Base da carteira
+          </Button>
 
           <p className="px-3 pb-2 pt-6 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70">
             Ferramentas
@@ -377,8 +390,17 @@ function Index() {
               />
             </div>
           ) : view === "carteira" ? (
+            <div key={`${view}-${editCarteiraId ?? "novo"}`} className="animate-rise">
+              <CarteiraNegociacao editId={editCarteiraId} onSaved={() => {
+                if (editCarteiraId) {
+                  setEditCarteiraId(null);
+                  setView("base-carteira");
+                }
+              }} />
+            </div>
+          ) : view === "base-carteira" ? (
             <div key={view} className="animate-rise">
-              <CarteiraNegociacao />
+              <BaseCarteira onEdit={(id) => { setEditCarteiraId(id); setView("carteira"); }} />
             </div>
           ) : (
             <div

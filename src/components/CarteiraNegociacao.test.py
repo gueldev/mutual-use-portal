@@ -1,6 +1,6 @@
 """Regressão: salvar negociação exige clique, não ativação pelo teclado."""
 import unittest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 
 class SalvarNegociacaoTest(unittest.TestCase):
@@ -37,9 +37,39 @@ class SalvarNegociacaoTest(unittest.TestCase):
             page.get_by_role("option", name="Norte", exact=True).click()
             page.get_by_role("combobox", name="Status Projeto", exact=True).click()
             page.get_by_role("option", name="Aguardando", exact=True).click()
+            page.get_by_role("textbox", name="Nº Notificação", exact=True).fill("TESTE-123")
+            page.get_by_role("spinbutton", name="Preço do Ponto", exact=True).fill("20")
+            page.get_by_role("spinbutton", name="Qtd Pontos à Revelia", exact=True).fill("10")
+            page.get_by_role("button", name="Alterar Implemento Calculado (R$)", exact=True).click()
+            page.get_by_role("spinbutton", name="Implemento Calculado (R$)", exact=True).fill("350")
+            page.get_by_role("button", name="Concluir edição de Implemento Calculado (R$)", exact=True).click()
             save.click()
             confirmation.wait_for()
             self.assertTrue(confirmation.is_visible())
+            self.assertEqual(page.get_by_placeholder("10 dígitos").input_value(), "")
+            page.get_by_role("button", name="Base da carteira", exact=True).click()
+            page.get_by_role("cell", name="TESTE-123", exact=True).wait_for()
+            self.assertEqual(page.locator("tbody tr").count(), 1)
+            search = page.get_by_role("textbox", name="Pesquisar carteira", exact=True)
+            search.fill("123")
+            self.assertEqual(page.locator("tbody tr").count(), 1)
+            search.fill("inexistente")
+            self.assertEqual(page.locator("tbody tr").count(), 0)
+            search.fill("")
+            page.get_by_role("button", name="Editar", exact=True).click()
+            page.get_by_placeholder("10 dígitos").wait_for()
+            expect(page.get_by_role("textbox", name="Nº Notificação", exact=True)).to_have_value("TESTE-123")
+            self.assertEqual(page.get_by_placeholder("10 dígitos").input_value(), "1234567890")
+            self.assertIn("350", page.get_by_role("textbox", name="Implemento Calculado (R$)", exact=True).input_value())
+            page.get_by_role("textbox", name="Nº Notificação", exact=True).fill("TESTE-EDITADO")
+            page.get_by_role("button", name="Salvar", exact=True).click()
+            page.screenshot(path="/tmp/browser/base-carteira-edicao.png")
+            page.get_by_role("cell", name="TESTE-EDITADO", exact=True).wait_for()
+            self.assertEqual(page.locator("tbody tr").count(), 1)
+            page.reload()
+            page.wait_for_timeout(1500)
+            page.get_by_role("button", name="Base da carteira", exact=True).click()
+            page.get_by_role("cell", name="TESTE-EDITADO", exact=True).wait_for()
             browser.close()
 
 
