@@ -351,7 +351,7 @@ export default function CarteiraNegociacao() {
             <Field label="Observações" required={false} full>
               <textarea className={cn(inputCls, "min-h-24 resize-y")} aria-label="Observações" rows={3} value={dados.observacoes} onChange={(e) => set("observacoes", e.target.value)} />
             </Field>
-            <Field label="Município/Local de prestação" required={false} error={err("municipioLocalPrestacao")}>
+            <Field label="Município/Local de prestação" error={err("municipioLocalPrestacao")}>
               <MunicipioCombobox
                 label="Município/Local de prestação"
                 value={dados.municipioLocalPrestacao}
@@ -360,10 +360,10 @@ export default function CarteiraNegociacao() {
                 className={inputCls}
               />
             </Field>
-            <Field label="Setor" required={false}>
+            <Field label="Setor" error={err("setor")}>
               <OpcaoNegociacao label="Setor" value={dados.setor} options={["Norte", "Sul", "Metropolitano", "Centro", "Centro Oeste", "Oeste"]} onChange={(v) => set("setor", v)} />
             </Field>
-            <Field label="Status Projeto" required={false}>
+            <Field label="Status Projeto" error={err("statusProjeto")}>
               <OpcaoNegociacao label="Status Projeto" value={dados.statusProjeto} options={["Aguardando", "Aprovado"]} onChange={(v) => set("statusProjeto", v)} />
             </Field>
             <Field label="Origem do Retroativo" required={false}>

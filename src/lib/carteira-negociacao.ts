@@ -146,8 +146,11 @@ export function validarDadosCliente(v: DadosCliente): Partial<Record<keyof Dados
   if (!v.nomeParceiro.trim()) e.nomeParceiro = "Informe o nome do parceiro.";
   if (!v.razaoSocial.trim()) e.razaoSocial = "Informe a razão social.";
   if (!v.plaqueta.trim()) e.plaqueta = "Informe a plaqueta.";
-  if (v.municipioLocalPrestacao.trim() && !PE_MUNICIPIOS.some((m) => m.toLowerCase() === v.municipioLocalPrestacao.trim().toLowerCase()))
+  if (!v.municipioLocalPrestacao.trim()) e.municipioLocalPrestacao = "Informe o município/local de prestação.";
+  else if (!PE_MUNICIPIOS.some((m) => m.toLowerCase() === v.municipioLocalPrestacao.trim().toLowerCase()))
     e.municipioLocalPrestacao = "Selecione um município de Pernambuco da lista.";
+  if (!v.setor.trim()) e.setor = "Selecione o setor.";
+  if (!v.statusProjeto.trim()) e.statusProjeto = "Selecione o status do projeto.";
   return e;
 }
 

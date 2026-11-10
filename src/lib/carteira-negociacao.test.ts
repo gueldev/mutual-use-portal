@@ -40,4 +40,16 @@ describe("cálculos da Seção 2", () => {
     strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Recife" }).municipioLocalPrestacao, undefined);
     strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Município inexistente" }).municipioLocalPrestacao, "Selecione um município de Pernambuco da lista.");
   });
+  test("município da Seção 3 é obrigatório", () => {
+    strictEqual(validarDadosCliente(emptyDadosCliente).municipioLocalPrestacao, "Informe o município/local de prestação.");
+    strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Recife" }).municipioLocalPrestacao, undefined);
+  });
+  test("setor da Seção 3 é obrigatório", () => {
+    strictEqual(validarDadosCliente(emptyDadosCliente).setor, "Selecione o setor.");
+    strictEqual(validarDadosCliente({ ...emptyDadosCliente, setor: "Norte" }).setor, undefined);
+  });
+  test("status do projeto da Seção 3 é obrigatório", () => {
+    strictEqual(validarDadosCliente(emptyDadosCliente).statusProjeto, "Selecione o status do projeto.");
+    strictEqual(validarDadosCliente({ ...emptyDadosCliente, statusProjeto: "Aguardando" }).statusProjeto, undefined);
+  });
 });
