@@ -102,6 +102,11 @@ const notasItems: { key: ViewKey; label: string }[] = [
 
 const solicitacoesGroup: ViewKey[] = ["solicitacoes", "minutas-sub"];
 const notasGroup: ViewKey[] = ["formulario-notas", "notas"];
+const carteiraGroup: ViewKey[] = ["carteira", "base-carteira"];
+const carteiraItems: { key: ViewKey; label: string }[] = [
+  { key: "carteira", label: "Carteira de Negociação" },
+  { key: "base-carteira", label: "Base da carteira" },
+];
 
 function Index() {
   const [open, setOpen] = useState(false);
@@ -113,10 +118,12 @@ function Index() {
     solicitacoesGroup.includes(view),
   );
   const [openNotas, setOpenNotas] = useState(notasGroup.includes(view));
+  const [openCarteira, setOpenCarteira] = useState(carteiraGroup.includes(view));
 
   useEffect(() => {
     setOpenSolicitacoes(solicitacoesGroup.includes(view));
     setOpenNotas(notasGroup.includes(view));
+    setOpenCarteira(carteiraGroup.includes(view));
   }, [view]);
 
   const select = (key: ViewKey) => {
@@ -140,7 +147,9 @@ function Index() {
     ? "Solicitações"
     : notasGroup.includes(view)
       ? "Notas"
-      : null;
+      : carteiraGroup.includes(view)
+        ? "Carteira"
+        : null;
 
   return (
     <div className="min-h-screen bg-background font-sans md:flex">
@@ -283,17 +292,33 @@ function Index() {
             <TrendingUp className="size-4" />
             Incrementos
           </button>
-          <button
-            onClick={() => select("carteira")}
-            className={itemClass(view === "carteira")}
+          <Button
+            variant="ghost"
+            onClick={() => setOpenCarteira((v) => !v)}
+            aria-expanded={openCarteira}
+            aria-controls="menu-carteira"
+            className={itemClass(carteiraGroup.includes(view))}
           >
             <Briefcase className="size-4" />
-            Carteira de Negociação
-          </button>
-          <Button variant="ghost" onClick={() => select("base-carteira")} className={itemClass(view === "base-carteira")}>
-            <Briefcase className="size-4" />
-            Base da carteira
+            <span className="flex-1 text-left">Carteira</span>
+            <ChevronDown className={`size-4 transition-transform duration-300 ${openCarteira ? "" : "-rotate-90"}`} />
           </Button>
+          <div id="menu-carteira" hidden={!openCarteira}>
+            <ul className="ml-5 space-y-0.5 overflow-hidden border-l border-primary-foreground/25 pl-3">
+              {carteiraItems.map((item) => (
+                <li key={item.key}>
+                  <Button
+                    variant="ghost"
+                    onClick={() => select(item.key)}
+                    className={`flex w-full justify-start gap-2 rounded-md px-3 py-2 text-left text-[0.82rem] font-medium transition-all duration-200 ${view === item.key ? "bg-brand-dark/60 text-primary-foreground" : "opacity-90 hover:bg-brand-dark/50 hover:translate-x-0.5"}`}
+                  >
+                    <span className={`shrink-0 rounded-full bg-primary-foreground ${view === item.key ? "size-2" : "size-1.5 opacity-85"}`} />
+                    {item.label}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <p className="px-3 pb-2 pt-6 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70">
             Ferramentas

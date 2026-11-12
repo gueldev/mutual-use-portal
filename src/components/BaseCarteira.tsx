@@ -59,14 +59,14 @@ export default function BaseCarteira({ onEdit }: { onEdit: (id: string) => void 
       {filtered.length === 0 ? <p className="py-16 text-center text-sm text-muted-foreground">{registros.length === 0 ? "Nenhuma negociação cadastrada" : "Nenhum registro encontrado"}</p> : (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full text-left text-xs">
-            <thead><tr className="border-b border-border bg-secondary/40"><th className="px-4 py-3">Ações</th>{columns.map((column) => <th key={column.key} className="whitespace-nowrap px-4 py-3 font-semibold">{column.label}</th>)}</tr></thead>
+            <thead><tr className="border-b border-border bg-secondary/40">{columns.map((column) => <th key={column.key} className="whitespace-nowrap px-4 py-3 font-semibold">{column.label}</th>)}<th className="px-4 py-3">Ações</th></tr></thead>
             <tbody>{filtered.map((registro) => <tr key={registro.id} className="border-b border-border last:border-0 hover:bg-secondary/25">
-              <td className="px-4 py-3"><Button type="button" variant="outline" size="sm" onClick={() => onEdit(registro.id)}><Pencil className="size-3" />Editar</Button></td>
               {columns.map((column) => {
                 const value = registro[column.key];
                 const formatted = !value ? "—" : currencyKeys.has(column.key) ? moeda.format(Number(value)) : column.key === "documento" ? value : column.key.startsWith("data") || column.key === "inicioVigencia" ? value.split("-").reverse().join("/") : column.key.startsWith("percentual") ? `${value}%` : value;
                 return <td key={column.key} className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatted}</td>;
               })}
+              <td className="px-4 py-3"><Button type="button" variant="outline" size="sm" onClick={() => onEdit(registro.id)}><Pencil className="size-3" />Editar</Button></td>
             </tr>)}</tbody>
           </table>
         </div>
