@@ -3,16 +3,18 @@ import { AlertCircle, Check, CheckCircle2, FileText, Pencil, RotateCcw, Save, Us
 
 import {
   emptyDadosCliente,
-  calcularMesesRetroativo,
+  calcularTotaisMunicipios,
   calcularValoresNegociacao,
   maskCpfCnpj,
   validarDadosCliente,
   type DadosCliente,
+  type MunicipioNegociacao,
 } from "@/lib/carteira-negociacao";
 import { ANALISTAS } from "@/lib/responsaveis";
 import { readCarteira, salvarCarteira } from "@/lib/carteira-store";
 import { cn } from "@/lib/utils";
 import MunicipioCombobox from "@/components/MunicipioCombobox";
+import MunicipiosNegociacao from "@/components/MunicipiosNegociacao";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -66,7 +68,7 @@ function Field({
   );
 }
 
-type ValorCalculadoKey = "implementoCalculado" | "retroativoCalculado" | "implementoAcumulado";
+type ValorCalculadoKey = "implementoAcumulado";
 
 type CampoCalculadoProps = {
   label: string;
@@ -147,22 +149,28 @@ export default function CarteiraNegociacao({ editId, onSaved }: { editId?: strin
     const valoresAutomaticos = calcularValoresNegociacao(registro);
     setDados({ ...emptyDadosCliente, ...registro, ...valoresAutomaticos });
     const ajustes: Partial<Record<ValorCalculadoKey, string>> = {};
-    for (const campo of ["implementoCalculado", "retroativoCalculado", "implementoAcumulado"] as const) {
-      if (registro[campo] !== valoresAutomaticos[campo]) ajustes[campo] = registro[campo];
+    if (registro.implementoAcumulado !== valoresAutomaticos.implementoAcumulado) {
+      ajustes.implementoAcumulado = registro.implementoAcumulado;
     }
     setValoresEditados(ajustes);
     setLoaded(true);
   }, [editId]);
 
   const errors = validarDadosCliente(dados);
-  const mesesRetroativo = calcularMesesRetroativo(dados.dataInicio, dados.dataFim);
   const docLen = dados.documento.length;
   const err = (k: keyof DadosCliente) =>
     submitted || (k === "documento" && (docLen === 11 || docLen === 14)) ? errors[k] : undefined;
-  const set = (k: keyof DadosCliente, v: string) => {
+  const set = <K extends keyof DadosCliente>(k: K, v: DadosCliente[K]) => {
     setSaved(false);
     setDados((p) => {
       const proximo = { ...p, [k]: v };
+      return { ...proximo, ...calcularValoresNegociacao(proximo) };
+    });
+  };
+  const setMunicipios = (municipios: MunicipioNegociacao[]) => {
+    setSaved(false);
+    setDados((atual) => {
+      const proximo = { ...atual, municipios, totaisMunicipios: calcularTotaisMunicipios(municipios) };
       return { ...proximo, ...calcularValoresNegociacao(proximo) };
     });
   };
@@ -262,42 +270,20 @@ export default function CarteiraNegociacao({ editId, onSaved }: { editId?: strin
             <Field label="Início Vigência" required={false}>
               <input className={inputCls} type="date" aria-label="Início Vigência" value={dados.inicioVigencia} onChange={(e) => set("inicioVigencia", e.target.value)} />
             </Field>
-            <Field label="Preço do Ponto" required={false}>
-              <input className={inputCls} type="number" step="0.01" aria-label="Preço do Ponto" placeholder="R$ 0,00" value={dados.precoPonto} onChange={(e) => set("precoPonto", e.target.value)} />
-            </Field>
-            <Field label="Qtd Pontos Censo" required={false}>
-              <input className={inputCls} type="number" step="1" aria-label="Qtd Pontos Censo" value={dados.qtdPontosCenso} onChange={(e) => set("qtdPontosCenso", e.target.value)} />
-            </Field>
-            <Field label="Qtd Pontos à Revelia" required={false}>
-              <input className={inputCls} type="number" step="1" aria-label="Qtd Pontos à Revelia" value={dados.qtdPontosRevelia} onChange={(e) => set("qtdPontosRevelia", e.target.value)} />
-            </Field>
-            <Field label="Data Início" required={false} hint="Lançamento da rede">
-              <input className={inputCls} type="date" aria-label="Data Início" value={dados.dataInicio} onChange={(e) => set("dataInicio", e.target.value)} />
-            </Field>
-            <Field label="Data Fim" required={false} hint="Data final para cálculo do retroativo">
-              <input className={inputCls} type="date" aria-label="Data Fim" value={dados.dataFim} onChange={(e) => set("dataFim", e.target.value)} />
-            </Field>
-            <CampoCalculado
-              label="Implemento Calculado (R$)"
-              value={dados.implementoCalculado}
-              editedValue={valoresEditados.implementoCalculado}
-              editing={campoEmEdicao === "implementoCalculado"}
-              onEdit={() => iniciarEdicao("implementoCalculado")}
-              onFinish={() => setCampoEmEdicao(null)}
-              onChange={(valor) => alterarValor("implementoCalculado", valor)}
-              onReset={() => restaurarCalculo("implementoCalculado")}
-            />
-            <CampoCalculado
-              label="Retroativo Calculado (R$)"
-              value={dados.retroativoCalculado}
-              editedValue={valoresEditados.retroativoCalculado}
-              editing={campoEmEdicao === "retroativoCalculado"}
-              hint={mesesRetroativo === null ? undefined : `Período considerado: ${mesesRetroativo} ${mesesRetroativo === 1 ? "mês" : "meses"}`}
-              onEdit={() => iniciarEdicao("retroativoCalculado")}
-              onFinish={() => setCampoEmEdicao(null)}
-              onChange={(valor) => alterarValor("retroativoCalculado", valor)}
-              onReset={() => restaurarCalculo("retroativoCalculado")}
-            />
+            <div className="md:col-span-2">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-xs font-semibold text-foreground">Municípios <span className="text-brand">*</span></h3>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Cada município possui valores e cálculos independentes.</p>
+                </div>
+              </div>
+              <MunicipiosNegociacao
+                value={dados.municipios}
+                onChange={setMunicipios}
+                submitted={submitted}
+                error={errors.municipios}
+              />
+            </div>
             <Field label="Focal" required={false}>
               <select className={inputCls} aria-label="Focal" value={dados.focal} onChange={(e) => set("focal", e.target.value)}>
                 <option value="">Selecione</option>

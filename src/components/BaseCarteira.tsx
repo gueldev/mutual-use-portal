@@ -4,7 +4,9 @@ import { useCarteira } from "@/lib/carteira-store";
 import type { DadosCliente } from "@/lib/carteira-negociacao";
 import { Button } from "@/components/ui/button";
 
-const columns: { key: keyof DadosCliente; label: string }[] = [
+type ChaveTexto = { [K in keyof DadosCliente]: DadosCliente[K] extends string ? K : never }[keyof DadosCliente];
+
+const columns: { key: ChaveTexto; label: string }[] = [
   { key: "numeroNotificacao", label: "Nº Notificação" },
   { key: "dataNotificacao", label: "Data Notificação" },
   { key: "documento", label: "CNPJ/CPF" },
@@ -35,7 +37,7 @@ const columns: { key: keyof DadosCliente; label: string }[] = [
   { key: "origemRetroativo", label: "Origem do Retroativo" },
   { key: "dataConclusaoNegociacao", label: "Data de Conclusão da Negociação" },
 ];
-const currencyKeys = new Set<keyof DadosCliente>(["implementoCalculado", "implementoAcumulado", "retroativoCalculado", "valorMulta", "retroativoNegociado", "contasReceberNegociado"]);
+const currencyKeys = new Set<ChaveTexto>(["implementoCalculado", "implementoAcumulado", "retroativoCalculado", "valorMulta", "retroativoNegociado", "contasReceberNegociado"]);
 const moeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 export default function BaseCarteira({ onEdit }: { onEdit: (id: string) => void }) {

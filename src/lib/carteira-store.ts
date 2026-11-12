@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { DadosCliente } from "./carteira-negociacao";
+import { normalizarDadosCliente, type DadosCliente } from "./carteira-negociacao";
 
 export type CarteiraRegistro = DadosCliente & { id: string; criadoEm: string };
 const KEY = "portal-uso-mutuo:carteira";
@@ -8,7 +8,19 @@ const listeners = new Set<() => void>();
 export function readCarteira(): CarteiraRegistro[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(window.localStorage.getItem(KEY) || "[]");
+    const parsed = JSON.parse(window.localStorage.getItem(KEY) || "[]");
+    if (!Array.isArray(parsed)) return [];
+    let migrou = false;
+    const registros = parsed.map((item) => {
+      if (!Array.isArray(item.municipios)) migrou = true;
+      return {
+        ...normalizarDadosCliente(item),
+        id: item.id,
+        criadoEm: item.criadoEm,
+      };
+    });
+    if (migrou) window.localStorage.setItem(KEY, JSON.stringify(registros));
+    return registros;
   } catch {
     return [];
   }
@@ -17,8 +29,9 @@ export function readCarteira(): CarteiraRegistro[] {
 export function salvarCarteira(dados: DadosCliente, id?: string | null): CarteiraRegistro {
   const registros = readCarteira();
   const existente = registros.find((registro) => registro.id === id);
+  const normalizado = normalizarDadosCliente(dados);
   const registro = {
-    ...dados,
+    ...normalizado,
     id: existente?.id ?? crypto.randomUUID(),
     criadoEm: existente?.criadoEm ?? new Date().toISOString(),
   };
