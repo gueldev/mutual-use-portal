@@ -302,6 +302,32 @@ export default function CarteiraNegociacao({ editId, onSaved }: { editId?: strin
             <Field label="Mês do Implemento" required={false}>
               <input className={inputCls} type="month" aria-label="Mês do Implemento" value={dados.mesImplemento} onChange={(e) => set("mesImplemento", e.target.value)} />
             </Field>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-5 md:p-6" aria-labelledby="conclusao-negociacao">
+          <header className="mb-5 flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-brand-dark">
+              <FileText className="size-5" />
+            </span>
+            <div>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Seção 3</p>
+              <h2 id="conclusao-negociacao" className="text-base font-semibold text-primary">Informações da Negociação</h2>
+            </div>
+          </header>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Observações" required={false} full>
+              <textarea className={cn(inputCls, "min-h-24 resize-y")} aria-label="Observações" rows={3} value={dados.observacoes} onChange={(e) => set("observacoes", e.target.value)} />
+            </Field>
+            <Field label="Status Projeto" error={err("statusProjeto")}>
+              <OpcaoNegociacao label="Status Projeto" value={dados.statusProjeto} options={["Aguardando", "Aprovado"]} onChange={(v) => set("statusProjeto", v)} />
+            </Field>
+            <Field label="Origem do Retroativo" required={false}>
+              <OpcaoNegociacao label="Origem do Retroativo" value={dados.origemRetroativo} options={["Censo", "Ação de Campo", "Projeto", "Fiscalização", "Notificação", "Baixados", "Ação de Cobrança"]} onChange={(v) => set("origemRetroativo", v)} />
+            </Field>
+            <Field label="Data de Conclusão da Negociação" required={false}>
+              <input className={inputCls} type="date" aria-label="Data de Conclusão da Negociação" value={dados.dataConclusaoNegociacao} onChange={(e) => set("dataConclusaoNegociacao", e.target.value)} />
+            </Field>
             <Field label="Condição de Pagamento" required={false}>
               <OpcaoNegociacao label="Condição de Pagamento" value={dados.condicaoPagamento} options={["À Vista", "Parcelado"]} onChange={(v) => set("condicaoPagamento", v)} />
             </Field>
@@ -336,32 +362,6 @@ export default function CarteiraNegociacao({ editId, onSaved }: { editId?: strin
             </Field>
             <Field label="Contas à receber Negociado" required={false}>
               <input className={inputCls} type="number" step="0.01" aria-label="Contas à receber Negociado" placeholder="R$ 0,00" value={dados.contasReceberNegociado} onChange={(e) => set("contasReceberNegociado", e.target.value)} />
-            </Field>
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-border bg-card p-5 md:p-6" aria-labelledby="conclusao-negociacao">
-          <header className="mb-5 flex items-start gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-brand-dark">
-              <FileText className="size-5" />
-            </span>
-            <div>
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Seção 3</p>
-              <h2 id="conclusao-negociacao" className="text-base font-semibold text-primary">Informações da Negociação</h2>
-            </div>
-          </header>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Observações" required={false} full>
-              <textarea className={cn(inputCls, "min-h-24 resize-y")} aria-label="Observações" rows={3} value={dados.observacoes} onChange={(e) => set("observacoes", e.target.value)} />
-            </Field>
-            <Field label="Status Projeto" error={err("statusProjeto")}>
-              <OpcaoNegociacao label="Status Projeto" value={dados.statusProjeto} options={["Aguardando", "Aprovado"]} onChange={(v) => set("statusProjeto", v)} />
-            </Field>
-            <Field label="Origem do Retroativo" required={false}>
-              <OpcaoNegociacao label="Origem do Retroativo" value={dados.origemRetroativo} options={["Censo", "Ação de Campo", "Projeto", "Fiscalização", "Notificação", "Baixados", "Ação de Cobrança"]} onChange={(v) => set("origemRetroativo", v)} />
-            </Field>
-            <Field label="Data de Conclusão da Negociação" required={false}>
-              <input className={inputCls} type="date" aria-label="Data de Conclusão da Negociação" value={dados.dataConclusaoNegociacao} onChange={(e) => set("dataConclusaoNegociacao", e.target.value)} />
             </Field>
           </div>
         </section>
