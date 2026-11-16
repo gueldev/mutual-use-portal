@@ -123,9 +123,10 @@ describe("municípios da Seção 2", () => {
     const antigo = { ...emptyDadosCliente, ...dadosRecife, implementoCalculado: "350.00", retroativoCalculado: "1000.00" };
     const municipios = migrarMunicipiosLegados(antigo);
     strictEqual(municipios.length, 1);
-    strictEqual(municipios[0].municipio, "Não informado");
-    strictEqual(municipios[0].implementoCalculado, "350.00");
-    strictEqual(municipios[0].implementoEditadoManualmente, true);
-    strictEqual(municipios[0].retroativoEditadoManualmente, false);
+    const migrado = municipios[0]!;
+    strictEqual(migrado.municipio, "Não informado");
+    strictEqual(migrado.implementoCalculado, "350.00");
+    strictEqual(migrado.implementoEditadoManualmente, true);
+    strictEqual(migrado.retroativoEditadoManualmente, false);
   });
 });

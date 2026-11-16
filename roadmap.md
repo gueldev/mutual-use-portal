@@ -15,7 +15,7 @@
 - [x] Aplicar o seletor restrito aos municípios de Pernambuco no Município/Local de prestação e iniciar as opções de Setor com letras maiúsculas.
 - [x] Permitir ajuste manual independente dos três valores calculados, preservando o cálculo automático e a opção de restaurá-lo; conferir na página.
 
-- [ ] Substituir os campos únicos de município da Seção 2 por linhas com seleção múltipla, duplicação, cálculos e ajustes manuais, mantendo Focal fora da tabela.
-- [ ] Adicionar totais em tempo real, layout de tabela no desktop e cards expansíveis no mobile.
-- [ ] Salvar municípios, ajustes e totais na Base da carteira, migrando registros antigos como “Não informado”.
-- [ ] Testar cálculos, validações, persistência, edição e limpeza sem alterar as demais seções.
+- [x] Substituir os campos únicos de município da Seção 2 por linhas com seleção múltipla, duplicação, cálculos e ajustes manuais, mantendo Focal fora da tabela.
+- [x] Adicionar totais em tempo real, layout de tabela no desktop e cards expansíveis no mobile.
+- [x] Salvar municípios, ajustes e totais na Base da carteira, migrando registros antigos como “Não informado”.
+- [x] Testar cálculos, validações, persistência, edição e limpeza sem alterar as demais seções.
