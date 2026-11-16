@@ -13,7 +13,6 @@ import {
 import { ANALISTAS } from "@/lib/responsaveis";
 import { readCarteira, salvarCarteira } from "@/lib/carteira-store";
 import { cn } from "@/lib/utils";
-import MunicipioCombobox from "@/components/MunicipioCombobox";
 import MunicipiosNegociacao from "@/components/MunicipiosNegociacao";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -354,18 +353,6 @@ export default function CarteiraNegociacao({ editId, onSaved }: { editId?: strin
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Observações" required={false} full>
               <textarea className={cn(inputCls, "min-h-24 resize-y")} aria-label="Observações" rows={3} value={dados.observacoes} onChange={(e) => set("observacoes", e.target.value)} />
-            </Field>
-            <Field label="Município/Local de prestação" error={err("municipioLocalPrestacao")}>
-              <MunicipioCombobox
-                label="Município/Local de prestação"
-                value={dados.municipioLocalPrestacao}
-                onChange={(valor) => set("municipioLocalPrestacao", valor)}
-                onBlur={() => undefined}
-                className={inputCls}
-              />
-            </Field>
-            <Field label="Setor" error={err("setor")}>
-              <OpcaoNegociacao label="Setor" value={dados.setor} options={["Norte", "Sul", "Metropolitano", "Centro", "Centro Oeste", "Oeste"]} onChange={(v) => set("setor", v)} />
             </Field>
             <Field label="Status Projeto" error={err("statusProjeto")}>
               <OpcaoNegociacao label="Status Projeto" value={dados.statusProjeto} options={["Aguardando", "Aprovado"]} onChange={(v) => set("statusProjeto", v)} />

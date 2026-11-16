@@ -1,5 +1,4 @@
 import { isValidCNPJ } from "@/lib/cnpj";
-import { PE_MUNICIPIOS } from "@/lib/pe-municipios";
 import { addMonths, differenceInCalendarDays, differenceInMonths, isValid, parseISO } from "date-fns";
 
 export type MunicipioNegociacao = {
@@ -61,8 +60,6 @@ export type DadosCliente = {
   retroativoNegociado: string;
   contasReceberNegociado: string;
   observacoes: string;
-  municipioLocalPrestacao: string;
-  setor: string;
   statusProjeto: string;
   origemRetroativo: string;
   dataConclusaoNegociacao: string;
@@ -111,8 +108,6 @@ export const emptyDadosCliente: DadosCliente = {
   retroativoNegociado: "",
   contasReceberNegociado: "",
   observacoes: "",
-  municipioLocalPrestacao: "",
-  setor: "",
   statusProjeto: "",
   origemRetroativo: "",
   dataConclusaoNegociacao: "",
@@ -254,6 +249,27 @@ export function normalizarDadosCliente(dados: Partial<DadosCliente>): DadosClien
   };
 }
 
+/** Cria um registro independente por município, repetindo os dados comuns da negociação. */
+export function separarDadosPorMunicipio(dados: DadosCliente): DadosCliente[] {
+  const normalizado = normalizarDadosCliente(dados);
+  const acumuladoAutomatico = calcularValoresNegociacao(normalizado).implementoAcumulado;
+  const acumuladoEditado = normalizado.implementoAcumulado.trim() !== "" && normalizado.implementoAcumulado !== acumuladoAutomatico;
+
+  return normalizado.municipios.map((municipio) => {
+    const registro = {
+      ...normalizado,
+      municipios: [municipio],
+      totaisMunicipios: calcularTotaisMunicipios([municipio]),
+    };
+    const calculados = calcularValoresNegociacao(registro);
+    return {
+      ...registro,
+      ...calculados,
+      implementoAcumulado: acumuladoEditado ? normalizado.implementoAcumulado : calculados.implementoAcumulado,
+    };
+  });
+}
+
 export function maskCpfCnpj(value: string): string {
   const d = value.replace(/\D/g, "").slice(0, 14);
   if (d.length <= 11) {
@@ -314,10 +330,6 @@ export function validarDadosCliente(v: DadosCliente): Partial<Record<keyof Dados
   } else if (new Set(v.municipios.map((municipio) => municipio.municipio.toLowerCase())).size !== v.municipios.length) {
     e.municipios = "Não é permitido selecionar o mesmo município mais de uma vez.";
   }
-  if (!v.municipioLocalPrestacao.trim()) e.municipioLocalPrestacao = "Informe o município/local de prestação.";
-  else if (!PE_MUNICIPIOS.some((m) => m.toLowerCase() === v.municipioLocalPrestacao.trim().toLowerCase()))
-    e.municipioLocalPrestacao = "Selecione um município de Pernambuco da lista.";
-  if (!v.setor.trim()) e.setor = "Selecione o setor.";
   if (!v.statusProjeto.trim()) e.statusProjeto = "Selecione o status do projeto.";
   return e;
 }

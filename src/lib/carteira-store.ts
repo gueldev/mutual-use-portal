@@ -1,9 +1,25 @@
 import { useEffect, useState } from "react";
-import { normalizarDadosCliente, type DadosCliente } from "./carteira-negociacao";
+import {
+  normalizarDadosCliente,
+  separarDadosPorMunicipio,
+  type DadosCliente,
+} from "./carteira-negociacao";
 
 export type CarteiraRegistro = DadosCliente & { id: string; criadoEm: string };
 const KEY = "portal-uso-mutuo:carteira";
 const listeners = new Set<() => void>();
+
+function novoId(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `carteira-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function dividirRegistro(dados: DadosCliente, id: string, criadoEm: string): CarteiraRegistro[] {
+  return separarDadosPorMunicipio(dados).map((registro, indice) => ({
+    ...registro,
+    id: indice === 0 ? id : novoId(),
+    criadoEm,
+  }));
+}
 
 export function readCarteira(): CarteiraRegistro[] {
   if (typeof window === "undefined") return [];
@@ -11,13 +27,13 @@ export function readCarteira(): CarteiraRegistro[] {
     const parsed = JSON.parse(window.localStorage.getItem(KEY) || "[]");
     if (!Array.isArray(parsed)) return [];
     let migrou = false;
-    const registros = parsed.map((item) => {
-      if (!Array.isArray(item.municipios)) migrou = true;
-      return {
-        ...normalizarDadosCliente(item),
-        id: item.id,
-        criadoEm: item.criadoEm,
-      };
+    const registros = parsed.flatMap((item) => {
+      if (!Array.isArray(item.municipios) || item.municipios.length > 1 || !item.id || !item.criadoEm) migrou = true;
+      return dividirRegistro(
+        normalizarDadosCliente(item),
+        item.id || novoId(),
+        item.criadoEm || new Date().toISOString(),
+      );
     });
     if (migrou) window.localStorage.setItem(KEY, JSON.stringify(registros));
     return registros;
@@ -26,21 +42,17 @@ export function readCarteira(): CarteiraRegistro[] {
   }
 }
 
-export function salvarCarteira(dados: DadosCliente, id?: string | null): CarteiraRegistro {
+export function salvarCarteira(dados: DadosCliente, id?: string | null): CarteiraRegistro[] {
   const registros = readCarteira();
   const existente = registros.find((registro) => registro.id === id);
-  const normalizado = normalizarDadosCliente(dados);
-  const registro = {
-    ...normalizado,
-    id: existente?.id ?? crypto.randomUUID(),
-    criadoEm: existente?.criadoEm ?? new Date().toISOString(),
-  };
+  const criadoEm = existente?.criadoEm ?? new Date().toISOString();
+  const novos = dividirRegistro(normalizarDadosCliente(dados), existente?.id ?? novoId(), criadoEm);
   const proximos = existente
-    ? registros.map((item) => item.id === id ? registro : item)
-    : [registro, ...registros];
+    ? registros.flatMap((item) => item.id === id ? novos : [item])
+    : [...novos, ...registros];
   window.localStorage.setItem(KEY, JSON.stringify(proximos));
   listeners.forEach((listener) => listener());
-  return registro;
+  return novos;
 }
 
 export function useCarteira(): CarteiraRegistro[] {

@@ -9,6 +9,7 @@ import {
   emptyDadosCliente,
   migrarMunicipiosLegados,
   recalcularMunicipioNegociacao,
+  separarDadosPorMunicipio,
   validarDadosCliente,
 } from "./carteira-negociacao";
 
@@ -51,17 +52,10 @@ describe("cálculos da Seção 2", () => {
     const incompleto = criarMunicipioNegociacao("Recife");
     strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipios: [incompleto] }).municipios, "Preencha todos os campos obrigatórios dos municípios e corrija as datas informadas.");
   });
-  test("município de prestação preenchido deve pertencer à lista de Pernambuco", () => {
-    strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Recife" }).municipioLocalPrestacao, undefined);
-    strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Município inexistente" }).municipioLocalPrestacao, "Selecione um município de Pernambuco da lista.");
-  });
-  test("município da Seção 3 é obrigatório", () => {
-    strictEqual(validarDadosCliente(emptyDadosCliente).municipioLocalPrestacao, "Informe o município/local de prestação.");
-    strictEqual(validarDadosCliente({ ...emptyDadosCliente, municipioLocalPrestacao: "Recife" }).municipioLocalPrestacao, undefined);
-  });
-  test("setor da Seção 3 é obrigatório", () => {
-    strictEqual(validarDadosCliente(emptyDadosCliente).setor, "Selecione o setor.");
-    strictEqual(validarDadosCliente({ ...emptyDadosCliente, setor: "Norte" }).setor, undefined);
+  test("município e setor não são mais exigidos na Seção 3", () => {
+    const camposComErro = Object.keys(validarDadosCliente(emptyDadosCliente));
+    strictEqual(camposComErro.includes("municipioLocalPrestacao"), false);
+    strictEqual(camposComErro.includes("setor"), false);
   });
   test("status do projeto da Seção 3 é obrigatório", () => {
     strictEqual(validarDadosCliente(emptyDadosCliente).statusProjeto, "Selecione o status do projeto.");
@@ -117,6 +111,39 @@ describe("municípios da Seção 2", () => {
     strictEqual(totais.implemento, 300);
     strictEqual(totais.retroativo, 1500);
     strictEqual(totais.totalGeral, 1800);
+  });
+
+  test("cada município vira um registro com os mesmos dados comuns e seus próprios valores", () => {
+    const recife = criarMunicipioNegociacao("Recife", dadosRecife);
+    const olinda = criarMunicipioNegociacao("Olinda", { ...dadosRecife, qtdPontosCenso: "2", qtdPontosRevelia: "5" });
+    const registros = separarDadosPorMunicipio({
+      ...emptyDadosCliente,
+      documento: "52998224725",
+      cc: "1234567890",
+      mesImplemento: "2026-10",
+      municipios: [recife, olinda],
+    });
+    strictEqual(registros.length, 2);
+    strictEqual(registros[0]?.documento, "52998224725");
+    strictEqual(registros[1]?.documento, "52998224725");
+    strictEqual(registros[0]?.cc, "1234567890");
+    strictEqual(registros[1]?.cc, "1234567890");
+    strictEqual(registros[0]?.municipios[0]?.municipio, "Recife");
+    strictEqual(registros[1]?.municipios[0]?.municipio, "Olinda");
+    strictEqual(registros[0]?.totaisMunicipios.quantidadeMunicipios, 1);
+    strictEqual(registros[1]?.totaisMunicipios.quantidadeMunicipios, 1);
+    strictEqual(registros[0]?.implementoCalculado, "200.00");
+    strictEqual(registros[1]?.implementoCalculado, "100.00");
+    strictEqual(registros[0]?.implementoAcumulado, "400.00");
+    strictEqual(registros[1]?.implementoAcumulado, "200.00");
+  });
+
+  test("a separação preserva um Implemento Acumulado ajustado manualmente", () => {
+    const recife = criarMunicipioNegociacao("Recife", dadosRecife);
+    const olinda = criarMunicipioNegociacao("Olinda", dadosRecife);
+    const registros = separarDadosPorMunicipio({ ...emptyDadosCliente, mesImplemento: "2026-10", implementoAcumulado: "999.00", municipios: [recife, olinda] });
+    strictEqual(registros[0]?.implementoAcumulado, "999.00");
+    strictEqual(registros[1]?.implementoAcumulado, "999.00");
   });
 
   test("registro antigo migra como um único município Não informado", () => {

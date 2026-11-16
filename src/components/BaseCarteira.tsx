@@ -5,12 +5,14 @@ import type { DadosCliente } from "@/lib/carteira-negociacao";
 import { Button } from "@/components/ui/button";
 
 type ChaveTexto = { [K in keyof DadosCliente]: DadosCliente[K] extends string ? K : never }[keyof DadosCliente];
+type ChaveColuna = ChaveTexto | "municipio";
 
-const columns: { key: ChaveTexto; label: string }[] = [
+const columns: { key: ChaveColuna; label: string }[] = [
   { key: "numeroNotificacao", label: "Nº Notificação" },
   { key: "dataNotificacao", label: "Data Notificação" },
   { key: "documento", label: "CNPJ/CPF" },
   { key: "cc", label: "CC" },
+  { key: "municipio", label: "Município" },
   { key: "nomeParceiro", label: "Nome do Parceiro" },
   { key: "razaoSocial", label: "Razão Social" },
   { key: "nomeFantasia", label: "Nome Fantasia" },
@@ -31,8 +33,6 @@ const columns: { key: ChaveTexto; label: string }[] = [
   { key: "valorMulta", label: "Valor da Multa" },
   { key: "retroativoNegociado", label: "Retroativo Negociado" },
   { key: "contasReceberNegociado", label: "Contas à receber Negociado" },
-  { key: "municipioLocalPrestacao", label: "Local de Prestação" },
-  { key: "setor", label: "Setor" },
   { key: "statusProjeto", label: "Status Projeto" },
   { key: "origemRetroativo", label: "Origem do Retroativo" },
   { key: "dataConclusaoNegociacao", label: "Data de Conclusão da Negociação" },
@@ -45,7 +45,7 @@ export default function BaseCarteira({ onEdit }: { onEdit: (id: string) => void 
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
   const filtered = registros.filter((registro) =>
-    !q || [registro.numeroNotificacao, registro.razaoSocial, registro.nomeParceiro, registro.cc, registro.documento].some((value) => value.toLowerCase().includes(q)) ||
+    !q || [registro.numeroNotificacao, registro.razaoSocial, registro.nomeParceiro, registro.cc, registro.documento, registro.municipios[0]?.municipio ?? ""].some((value) => value.toLowerCase().includes(q)) ||
     (q.replace(/\D/g, "").length > 0 && registro.documento.includes(q.replace(/\D/g, "")))
   );
   return (
@@ -54,7 +54,7 @@ export default function BaseCarteira({ onEdit }: { onEdit: (id: string) => void 
         <h1 className="text-2xl font-semibold text-primary">Base da carteira</h1>
         <div className="relative w-full md:w-96">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <input aria-label="Pesquisar carteira" placeholder="Pesquisar por Notificação, Razão Social, CC ou CNPJ/CPF" value={query} onChange={(e) => setQuery(e.target.value)} className="w-full rounded-xl border border-input bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-brand" />
+          <input aria-label="Pesquisar carteira" placeholder="Pesquisar por Notificação, Município, Razão Social, CC ou CNPJ/CPF" value={query} onChange={(e) => setQuery(e.target.value)} className="w-full rounded-xl border border-input bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-brand" />
         </div>
       </header>
       <p className="mb-3 text-xs text-muted-foreground">{filtered.length} registro(s)</p>
@@ -64,8 +64,8 @@ export default function BaseCarteira({ onEdit }: { onEdit: (id: string) => void 
             <thead><tr className="border-b border-border bg-secondary/40">{columns.map((column) => <th key={column.key} className="whitespace-nowrap px-4 py-3 font-semibold">{column.label}</th>)}<th className="px-4 py-3">Ações</th></tr></thead>
             <tbody>{filtered.map((registro) => <tr key={registro.id} className="border-b border-border last:border-0 hover:bg-secondary/25">
               {columns.map((column) => {
-                const value = registro[column.key];
-                const formatted = !value ? "—" : currencyKeys.has(column.key) ? moeda.format(Number(value)) : column.key === "documento" ? value : column.key.startsWith("data") || column.key === "inicioVigencia" ? value.split("-").reverse().join("/") : column.key.startsWith("percentual") ? `${value}%` : value;
+                const value = column.key === "municipio" ? registro.municipios[0]?.municipio ?? "Não informado" : registro[column.key];
+                const formatted = !value ? "—" : column.key !== "municipio" && currencyKeys.has(column.key) ? moeda.format(Number(value)) : column.key === "documento" ? value : column.key.startsWith("data") || column.key === "inicioVigencia" ? value.split("-").reverse().join("/") : column.key.startsWith("percentual") ? `${value}%` : value;
                 return <td key={column.key} className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatted}</td>;
               })}
               <td className="px-4 py-3"><Button type="button" variant="outline" size="sm" onClick={() => onEdit(registro.id)}><Pencil className="size-3" />Editar</Button></td>

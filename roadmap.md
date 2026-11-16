@@ -19,3 +19,8 @@
 - [x] Adicionar totais em tempo real, layout de tabela no desktop e cards expansíveis no mobile.
 - [x] Salvar municípios, ajustes e totais na Base da carteira, migrando registros antigos como “Não informado”.
 - [x] Testar cálculos, validações, persistência, edição e limpeza sem alterar as demais seções.
+
+- [x] Remover Município/Local de prestação e Setor da Seção 3, mantendo os demais campos.
+- [x] Salvar uma linha na Base da carteira para cada município selecionado, repetindo os demais dados e preservando os valores daquele município.
+- [x] Exibir o município na Base da carteira e permitir editar cada linha independentemente.
+- [x] Testar remoção dos campos, separação dos registros, edição e limpeza do formulário.
