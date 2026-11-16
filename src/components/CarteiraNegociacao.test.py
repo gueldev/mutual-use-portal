@@ -1,4 +1,4 @@
-"""Regressão: salvamento por clique e uma linha na base para cada município."""
+"""Regressão: salvamento por clique, uma linha por município e exclusão individual."""
 import unittest
 from playwright.sync_api import sync_playwright, expect
 
@@ -118,6 +118,18 @@ class SalvarNegociacaoTest(unittest.TestCase):
             page.get_by_role("button", name="Base da carteira", exact=True).click()
             page.get_by_role("cell", name="TESTE-EDITADO", exact=True).wait_for()
             self.assertEqual(page.locator("tbody tr").count(), 2)
+            page.screenshot(path="/tmp/browser/base-carteira-exclusao.png")
+            page.get_by_role("button", name="Excluir Olinda", exact=True).click()
+            self.assertEqual(page.locator("tbody tr").count(), 1)
+            self.assertEqual(page.get_by_role("cell", name="Olinda", exact=True).count(), 0)
+            self.assertEqual(page.get_by_role("cell", name="TESTE-EDITADO", exact=True).count(), 1)
+            page.reload()
+            page.wait_for_timeout(1500)
+            page.get_by_role("button", name="Carteira", exact=True).click()
+            page.get_by_role("button", name="Base da carteira", exact=True).click()
+            page.get_by_role("cell", name="TESTE-EDITADO", exact=True).wait_for()
+            self.assertEqual(page.locator("tbody tr").count(), 1)
+            self.assertEqual(page.get_by_role("cell", name="Olinda", exact=True).count(), 0)
             browser.close()
 
 

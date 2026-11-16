@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Pencil, Search } from "lucide-react";
-import { useCarteira } from "@/lib/carteira-store";
+import { Pencil, Search, Trash2 } from "lucide-react";
+import { excluirCarteira, useCarteira } from "@/lib/carteira-store";
 import type { DadosCliente } from "@/lib/carteira-negociacao";
 import { Button } from "@/components/ui/button";
 
@@ -68,7 +68,22 @@ export default function BaseCarteira({ onEdit }: { onEdit: (id: string) => void 
                 const formatted = !value ? "—" : column.key !== "municipio" && currencyKeys.has(column.key) ? moeda.format(Number(value)) : column.key === "documento" ? value : column.key.startsWith("data") || column.key === "inicioVigencia" ? value.split("-").reverse().join("/") : column.key.startsWith("percentual") ? `${value}%` : value;
                 return <td key={column.key} className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatted}</td>;
               })}
-              <td className="px-4 py-3"><Button type="button" variant="outline" size="sm" onClick={() => onEdit(registro.id)}><Pencil className="size-3" />Editar</Button></td>
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => onEdit(registro.id)}><Pencil className="size-3" />Editar</Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="size-8"
+                    aria-label={`Excluir ${registro.municipios[0]?.municipio ?? "registro"}`}
+                    title="Excluir registro"
+                    onClick={() => excluirCarteira(registro.id)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </td>
             </tr>)}</tbody>
           </table>
         </div>

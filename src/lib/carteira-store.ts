@@ -55,6 +55,12 @@ export function salvarCarteira(dados: DadosCliente, id?: string | null): Carteir
   return novos;
 }
 
+export function excluirCarteira(id: string): void {
+  const proximos = readCarteira().filter((registro) => registro.id !== id);
+  window.localStorage.setItem(KEY, JSON.stringify(proximos));
+  listeners.forEach((listener) => listener());
+}
+
 export function useCarteira(): CarteiraRegistro[] {
   const [registros, setRegistros] = useState<CarteiraRegistro[]>([]);
   useEffect(() => {

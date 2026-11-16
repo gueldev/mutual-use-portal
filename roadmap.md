@@ -27,3 +27,4 @@
 
 - [x] Mover Condição de Pagamento, Exceção a Matriz, Desconto, Multa, Retroativo Negociado e Contas à receber Negociado para a Seção 3, com seus campos condicionais, mantendo Mês do Implemento na Seção 2 e preservando toda a lógica.
 - [x] Conferir preenchimento, campos condicionais, salvamento por município e limpeza após a reorganização.
+- [x] Adicionar exclusão individual por lixeira vermelha ao lado de Editar na Base da carteira e testar a persistência.
